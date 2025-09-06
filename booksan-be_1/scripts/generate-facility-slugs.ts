@@ -23,7 +23,9 @@ async function generateSlugsForExistingFacilities() {
     // Get all facilities without slugs
     const facilities = await prisma.facility.findMany({
       where: {
-        slug: null,
+        slug: {
+          equals: '',
+        },
       },
       select: {
         id: true,

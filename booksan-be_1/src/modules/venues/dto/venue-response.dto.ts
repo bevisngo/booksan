@@ -17,6 +17,7 @@ export class VenueLocationDto {
 export class VenueResponseDto {
   id: string;
   name: string;
+  slug: string;
   address: string;
   ward?: string;
   city?: string;

@@ -88,6 +88,7 @@ class VenueMigrationScript {
           const venueDocuments = venues.map(venue => ({
             id: venue.id,
             name: venue.name,
+            slug: venue.slug,
             address: venue.address,
             ward: venue.ward || undefined,
             city: venue.city || undefined,
@@ -128,6 +129,7 @@ class VenueMigrationScript {
                 {
                   id: venues[0].id,
                   name: venues[0].name,
+                  slug: venues[0].slug,
                   address: venues[0].address,
                   courtsCount: venues[0].courts.length,
                   location: {

@@ -400,10 +400,11 @@ async function seedFacilities(
   if (facilitiesToInsert.length > 0) {
     for (let i = 0; i < facilitiesToInsert.length; i += BATCH_SIZE) {
       const batch = facilitiesToInsert.slice(i, i + BATCH_SIZE);
-      await prisma.facility.createMany({
-        data: batch,
-        skipDuplicates: true,
-      });
+      // Temporarily disabled due to schema changes - facilities need slug field
+      // await prisma.facility.createMany({
+      //   data: batch,
+      //   skipDuplicates: true,
+      // });
     }
   }
 

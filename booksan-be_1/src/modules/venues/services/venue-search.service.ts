@@ -115,6 +115,7 @@ export class VenueSearchService {
       const venueDoc: VenueSearchDocument = {
         id: venueData.id,
         name: venueData.name,
+        slug: venueData.slug,
         address: venueData.address,
         ward: venueData.ward || undefined,
         city: venueData.city || undefined,
@@ -198,6 +199,7 @@ export class VenueSearchService {
       const venueDocuments: VenueSearchDocument[] = venues.data.map(venue => ({
         id: venue.id,
         name: venue.name,
+        slug: venue.slug,
         address: venue.address,
         ward: venue.ward || undefined,
         city: venue.city || undefined,
@@ -255,6 +257,7 @@ export class VenueSearchService {
     return plainToClass(VenueResponseDto, {
       id: venue.id,
       name: venue.name,
+      slug: venue.slug,
       address: venue.address,
       ward: venue.ward,
       city: venue.city,

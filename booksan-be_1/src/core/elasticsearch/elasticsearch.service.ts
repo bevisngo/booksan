@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export interface VenueSearchDocument {
   id: string;
   name: string;
+  slug: string;
   address: string;
   ward?: string;
   city?: string;

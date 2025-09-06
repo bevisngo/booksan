@@ -49,6 +49,7 @@ async function main() {
     create: {
       id: 'facility-1',
       name: 'Sports Complex A',
+      slug: 'sports-complex-a-facility-1',
       desc: 'A modern sports complex with multiple courts',
       phone: '+84 123 456 789',
       address: '123 Sports Street, District 1',

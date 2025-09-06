@@ -1,7 +1,17 @@
 import { Module } from '@nestjs/common';
-import { VenueSearchController } from './controllers';
-import { VenueSearchService } from './services';
-import { VenueRepository } from './repositories';
+import { 
+  VenueSearchController,
+  FacilityProfileController,
+  FacilityPageController,
+  FacilityTemplateController,
+  VenueSitemapController,
+} from './controllers';
+import { VenueSearchService, FacilityProfileService } from './services';
+import { 
+  VenueRepository,
+  FacilityProfileRepository,
+  FacilityPageTemplateRepository,
+} from './repositories';
 import {
   SearchVenuesUseCase,
   GetVenueByIdUseCase,
@@ -13,10 +23,19 @@ import { AuthModule } from '@/modules/auth';
 
 @Module({
   imports: [AuthModule],
-  controllers: [VenueSearchController],
+  controllers: [
+    VenueSearchController,
+    FacilityProfileController,
+    FacilityPageController,
+    FacilityTemplateController,
+    VenueSitemapController,
+  ],
   providers: [
     VenueSearchService,
+    FacilityProfileService,
     VenueRepository,
+    FacilityProfileRepository,
+    FacilityPageTemplateRepository,
     SearchVenuesUseCase,
     GetVenueByIdUseCase,
     ReindexVenueUseCase,
@@ -25,7 +44,10 @@ import { AuthModule } from '@/modules/auth';
   ],
   exports: [
     VenueSearchService,
+    FacilityProfileService,
     VenueRepository,
+    FacilityProfileRepository,
+    FacilityPageTemplateRepository,
     SearchVenuesUseCase,
     GetVenueByIdUseCase,
     ReindexVenueUseCase,
