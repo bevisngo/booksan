@@ -1,0 +1,141 @@
+model Facility {
+  id          String             @id @default(cuid()) @map("_id")
+  ownerId     String             @map("owner_id")
+  name        String
+  slug        String             @unique
+  desc        String?
+  phone       String?
+  address     String
+  ward        String?
+  city        String?
+  isPublished Boolean            @default(false) @map("is_published")
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  bookings    Booking[]
+  courts      Court[]
+  owner       User               @relation(fields: [ownerId], references: [id])
+  openHours   FacilityOpenHour[]
+  profile     FacilityProfile?
+
+  @@map("facilities")
+}
+
+model Court {
+  id           String        @id @default(cuid()) @map("_id")
+  facilityId   String        @map("facility_id")
+  name         String
+  sport        Sport
+  surface      Surface?
+  indoor       Boolean       @default(false)
+  notes        String?
+  slotMinutes  Int           @map("slot_minutes")
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  bookingSlots BookingSlot[]
+  bookings     Booking[]
+  facility     Facility      @relation(fields: [facilityId], references: [id])
+  pricingRules PricingRule[]
+
+  @@map("courts")
+}
+
+model FacilityOpenHour {
+  id         String   @id @default(cuid()) @map("_id")
+  facilityId String   @map("facility_id")
+  weekDay    Int      @map("week_day")
+  openTime   String   @map("open_time")
+  closeTime  String   @map("close_time")
+  facility   Facility @relation(fields: [facilityId], references: [id])
+
+  @@map("facility_open_hours")
+}
+
+model FacilityProfile {
+  id              String                 @id @default(cuid()) @map("_id")
+  facilityId      String                 @unique @map("facility_id")
+  templateId      String?                @map("template_id")
+  customHtml      String?                @map("custom_html")
+  customCss       String?                @map("custom_css")
+  metaTitle       String?                @map("meta_title")
+  metaKeywords    String[]               @map("meta_keywords")
+  metaDescription String?                @map("meta_description")
+  openGraphTitle  String?                @map("open_graph_title")
+  openGraphDesc   String?                @map("open_graph_description")
+  openGraphImage  String?                @map("open_graph_image")
+  isCustomized    Boolean                @default(false) @map("is_customized")
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  facility        Facility               @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+  template        FacilityPageTemplate?  @relation(fields: [templateId], references: [id])
+
+  @@map("facility_profiles")
+}
+
+model FacilityPageTemplate {
+  id               String            @id @default(cuid()) @map("_id")
+  name             String
+  description      String?
+  htmlTemplate     String            @map("html_template")
+  cssTemplate      String            @map("css_template")
+  jsTemplate       String?           @map("js_template")
+  previewImage     String?           @map("preview_image")
+  category         TemplateCategory  @default(BASIC)
+  isPremium        Boolean           @default(false) @map("is_premium")
+  isActive         Boolean           @default(true) @map("is_active")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  facilityProfiles FacilityProfile[]
+
+  @@map("facility_page_templates")
+}
+
+enum TemplateCategory {
+  BASIC
+  MODERN
+  CLASSIC
+  SPORT_SPECIFIC
+  PREMIUM
+}
+
+model PricingRule {
+  id           String  @id @default(cuid()) @map("_id")
+  courtId      String  @map("court_id")
+  weekdayMask  Int     @map("weekday_mask")
+  startTime    String  @map("start_time")
+  endTime      String  @map("end_time")
+  pricePerSlot Int     @map("price_per_slot")
+  notes        String?
+  slotMinutes  Int     @map("slot_minutes")
+  court        Court   @relation(fields: [courtId], references: [id])
+
+  @@map("pricing_rules")
+}
+
+enum Sport {
+  TENNIS
+  BADMINTON
+  SQUASH
+  BASKETBALL
+  FOOTBALL
+  VOLLEYBALL
+  TABLE_TENNIS
+  OTHER
+  PICKLEBALL
+  FUTSAL
+}
+
+enum Surface {
+  HARD_COURT
+  CLAY
+  GRASS
+  CARPET
+  CONCRETE
+  WOODEN
+  SYNTHETIC
+  OTHER
+  ACRYLIC
+  SAND
+}

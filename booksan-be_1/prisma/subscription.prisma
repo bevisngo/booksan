@@ -1,0 +1,62 @@
+model Plan {
+  id            String         @id @default(cuid()) @map("_id")
+  name          String
+  description   String?
+  scope         PlanScope
+  amount        Int
+  currency      String         @default("USD")
+  billingCycle  BillingCycle   @map("billing_cycle")
+  features      Json?
+  endDate       DateTime?      @map("end_date")
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id              String             @id @default(cuid()) @map("_id")
+  ownerId         String             @map("owner_id")
+  planId          String             @map("plan_id")
+  quantity        Int                @default(1)
+  amount          Int
+  startDate       DateTime           @map("start_date")
+  endDate         DateTime?          @map("end_date")
+  nextBillingDate DateTime?          @map("next_billing_date")
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  status          SubscriptionStatus @default(ACTIVE)
+  owner           User               @relation(fields: [ownerId], references: [id])
+  plan            Plan               @relation(fields: [planId], references: [id])
+
+  @@map("subscriptions")
+}
+
+enum BillingCycle {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  ONE_TIME
+  CUSTOM
+}
+
+enum PlanScope {
+  FACILITY
+  COURT
+  USER
+  SYSTEM
+  ORGANIZATION
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+  TRIAL
+}

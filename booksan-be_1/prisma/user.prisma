@@ -1,0 +1,43 @@
+model User {
+  id                    String                     @id @default(cuid()) @map("_id")
+  fullname              String
+  phone                 String?
+  password              String
+  email                 String?                    @unique
+  role                  UserRole                   @default(PLAYER)
+  createdAt             DateTime                   @default(now())
+  updatedAt             DateTime                   @updatedAt
+  oauthId               String?
+  oauthProvider         OAuthProvider?
+  sentInvites           BookingParticipantInvite[] @relation("InviteSender")
+  addedParticipants     BookingParticipant[]       @relation("ParticipantAddedBy")
+  participantBookings   BookingParticipant[]       @relation("ParticipantUser")
+  createdShareLinks     BookingShareLink[]         @relation("ShareLinkCreator")
+  cancelledBookingSlots BookingSlot[]              @relation("SlotCanceller")
+  playerBookings        Booking[]                  @relation("PlayerBookings")
+  ownedFacilities       Facility[]
+  feeCharges            FeeCharge[]
+  ownerInvoices         OwnerInvoice[]
+  uploadedPaymentProofs PaymentProof[]             @relation("ProofUploader")
+  verifiedPaymentProofs PaymentProof[]             @relation("ProofVerifier")
+  paymentsAsPayee       Payment[]                  @relation("PayeeOwner")
+  paymentsAsPayer       Payment[]                  @relation("PayerUser")
+  subscriptions         Subscription[]
+
+  @@unique([phone])
+  @@map("users")
+}
+
+enum UserRole {
+  PLAYER
+  OWNER
+  MANAGER
+  STAFF
+  ADMIN
+}
+
+enum OAuthProvider {
+  GOOGLE
+  FACEBOOK
+  ZALO
+}

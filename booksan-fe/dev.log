@@ -1,0 +1,37 @@
+
+> booksan-fe@0.1.0 dev
+> next dev --turbopack -p 8081
+
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:8081
+   - Network:      http://172.20.10.8:8081
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Compiled middleware in 118ms
+ ✓ Ready in 1181ms
+ ○ Compiling /venues/search ...
+ ✓ Compiled /venues/search in 2.6s
+Failed to fetch venues: Error [InternalFetchError]: HTTP 404: Not Found
+    at internalFetch (src/lib/http/internalFetch.ts:58:12)
+    at async fetchVenuesPage (src/app/(search)/actions.ts:27:21)
+    at async fetchInitialVenues (src/app/(search)/actions.ts:83:11)
+    at async SearchPage (src/app/(search)/venues/search/page.tsx:59:17)
+  56 |
+  57 |     if (!response.ok) {
+> 58 |       throw new InternalFetchError(
+     |            ^
+  59 |         `HTTP ${response.status}: ${response.statusText}`,
+  60 |         response.status,
+  61 |         response.statusText, {
+  status: 404,
+  statusText: 'Not Found',
+  url: 'http://localhost:8000/v1/v1/venues/search?isPublished=true&sortBy=relevance&sortOrder=desc&limit=20&offset=0'
+}
+ GET /venues/search 200 in 2833ms
+ ✓ Compiled in 130ms
+ ✓ Compiled /venues/search in 23ms
+ GET /venues/search 200 in 306ms
+ ○ Compiling / ...
+ ✓ Compiled / in 612ms
+ GET / 200 in 920ms

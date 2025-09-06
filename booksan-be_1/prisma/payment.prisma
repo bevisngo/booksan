@@ -1,0 +1,195 @@
+model Payment {
+  id             String          @id @default(cuid()) @map("_id")
+  payerUserId    String          @map("payer_user_id")
+  payeeOwnerId   String          @map("payee_owner_id")
+  bookingId      String?         @map("booking_id")
+  bookingSlotId  String?         @map("booking_slot_id")
+  channel        PaymentChannel
+  provider       PaymentProvider
+  currency       PaymentCurrency @default(USD)
+  amountTotal    Int             @map("amount_total")
+  amountCaptured Int             @map("amount_captured")
+  status         PaymentStatus   @default(PENDING)
+  expiresAt      DateTime?       @map("expires_at")
+  note           String?
+  metadata       Json?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  feeCharges     FeeCharge[]
+  feeRules       FeeRule[]
+  paymentProofs  PaymentProof[]
+  booking        Booking?        @relation(fields: [bookingId], references: [id])
+  bookingSlot    BookingSlot?    @relation(fields: [bookingSlotId], references: [id])
+  payeeOwner     User            @relation("PayeeOwner", fields: [payeeOwnerId], references: [id])
+  payerUser      User            @relation("PayerUser", fields: [payerUserId], references: [id])
+
+  @@map("payments")
+}
+
+model PaymentProof {
+  id             String    @id @default(cuid()) @map("_id")
+  paymentId      String    @map("payment_id")
+  type           String
+  fileUrl        String    @map("file_url")
+  note           String?
+  uploadedBy     String    @map("uploaded_by")
+  verifiedBy     String?   @map("verified_by")
+  verifiedAt     DateTime? @map("verified_at")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  payment        Payment   @relation(fields: [paymentId], references: [id])
+  uploadedByUser User      @relation("ProofUploader", fields: [uploadedBy], references: [id])
+  verifiedByUser User?     @relation("ProofVerifier", fields: [verifiedBy], references: [id])
+
+  @@map("payment_proofs")
+}
+
+model FeeRule {
+  id         String          @id @default(cuid()) @map("_id")
+  paymentId  String          @map("payment_id")
+  name       String
+  scope      FeeRuleScope
+  applyOn    FeeRuleApplyOn
+  calcType   FeeRuleCalcType @map("calc_type")
+  value      Int
+  conditions Json?
+  active     Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  feeCharges FeeCharge[]
+  payment    Payment         @relation(fields: [paymentId], references: [id])
+
+  @@map("fee_rules")
+}
+
+model FeeCharge {
+  id            String             @id @default(cuid()) @map("_id")
+  ownerId       String             @map("owner_id")
+  bookingId     String?            @map("booking_id")
+  paymentId     String?            @map("payment_id")
+  bookingSlotId String?            @map("booking_slot_id")
+  feeRuleId     String?            @map("fee_rule_id")
+  value         Int
+  conditions    Json?
+  active        Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  booking       Booking?           @relation(fields: [bookingId], references: [id])
+  bookingSlot   BookingSlot?       @relation(fields: [bookingSlotId], references: [id])
+  feeRule       FeeRule?           @relation(fields: [feeRuleId], references: [id])
+  owner         User               @relation(fields: [ownerId], references: [id])
+  payment       Payment?           @relation(fields: [paymentId], references: [id])
+  invoiceItems  OwnerInvoiceItem[]
+
+  @@map("fee_charges")
+}
+
+model OwnerInvoice {
+  id          String             @id @default(cuid()) @map("_id")
+  ownerId     String             @map("owner_id")
+  periodStart DateTime           @map("period_start")
+  periodEnd   DateTime           @map("period_end")
+  amountDue   Int                @map("amount_due")
+  amountPaid  Int                @map("amount_paid")
+  status      InvoiceStatus      @default(DRAFT)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  items       OwnerInvoiceItem[]
+  owner       User               @relation(fields: [ownerId], references: [id])
+
+  @@map("owner_invoices")
+}
+
+model OwnerInvoiceItem {
+  id             String       @id @default(cuid()) @map("_id")
+  ownerInvoiceId String       @map("owner_invoice_id")
+  feeChargeId    String       @map("fee_charge_id")
+  description    String
+  amount         Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  feeCharge      FeeCharge    @relation(fields: [feeChargeId], references: [id])
+  ownerInvoice   OwnerInvoice @relation(fields: [ownerInvoiceId], references: [id])
+
+  @@map("owner_invoice_items")
+}
+
+enum PaymentChannel {
+  ONLINE
+  CASH
+  BANK_TRANSFER
+  MOBILE_MONEY
+  CREDIT_CARD
+  DEBIT_CARD
+  E_WALLET
+  QR_CODE
+  OTHER
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  MOBILE_MONEY
+  BANK
+  CASH
+  OTHER
+  VNPAY
+  MOMO
+  ZALOPAY
+}
+
+enum PaymentCurrency {
+  USD
+  EUR
+  GBP
+  JPY
+  CNY
+  VND
+  OTHER
+  SGD
+  THB
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+  EXPIRED
+  PARTIALLY_PAID
+}
+
+enum FeeRuleScope {
+  BOOKING
+  SLOT
+  FACILITY
+  COURT
+  USER
+  INVOICE
+}
+
+enum FeeRuleApplyOn {
+  TOTAL
+  PER_SLOT
+  PER_HOUR
+  PER_BOOKING
+  PER_USER
+}
+
+enum FeeRuleCalcType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  PER_UNIT
+  TIERED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+  PARTIALLY_PAID
+}

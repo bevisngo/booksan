@@ -1,0 +1,87 @@
+
+
+# Cursor Rules for Booksan Backend
+
+1. Project Structure
+- Use NestJS with Express.
+- Organize code by modules under src/modules.
+- Each feature has its own module, controller, service, repository, dto, and entities if needed.
+- Common utilities go under src/common.
+- Infrastructure services (Prisma, Redis, Logger) go under src/infra.
+
+2. Naming Conventions
+- Files: kebab-case.
+- Classes and Types: PascalCase.
+- Variables and functions: camelCase.
+- Database tables and columns: snake_case (map to camelCase in Prisma).
+
+3. Controllers
+- Keep controllers thin.
+- Parse DTO, call service, and return { data, meta? }.
+- Use proper HttpStatus codes.
+- Always add validation decorators.
+
+4. Services
+- Contain business logic.
+- Handle transactions with prisma.$transaction.
+- Use idempotency keys for critical operations (like booking and payments).
+- Do not directly call Prisma in controllers.
+
+5. Repositories
+- Abstract Prisma queries.
+- Never expose PrismaClient directly.
+- Return clean data models.
+
+6. DTO and Validation
+- Create dedicated DTOs for Create, Update, and Query.
+- Use class-validator and class-transformer.
+- Always enable whitelist, forbidNonWhitelisted, and transform options in ValidationPipe.
+
+7. Error Handling
+- Use NestJS HttpException classes.
+- Global exception filter should return JSON with error, message, path, and timestamp.
+
+8. Logging
+- Use pino for structured JSON logging.
+- Never use console.log.
+- Log important context (userId, bookingId, requestId).
+- Hide sensitive information (passwords, tokens).
+
+9. Database
+- Use multi-file Prisma schema (v5.15+).
+- Map DB fields with @map and @@map for snake_case.
+- Use pnpm prisma migrate dev --name <name> for dev migrations.
+- Use pnpm prisma migrate deploy for production.
+- Never use any type in source code.
+
+10. Security and Performance
+- Enable helmet, CORS whitelist, and cookie parser.
+- Use cursor-based pagination for lists.
+- Select only required fields from Prisma.
+- Use rate limiting for public endpoints.
+- Avoid N+1 queries by batching when possible.
+
+11. Commit and PR
+- Follow Conventional Commits style (feat:, fix:, refactor:).
+- Pull requests should include description and test evidence.
+- Each PR should be small (ideally <300 LOC).
+
+12. Testing
+- Write unit tests for services and repositories.
+- Write light e2e tests for main flows (auth, users).
+- Run tests before merging.
+
+13. Code Style
+- ESLint and Prettier must be used.
+- Do not disable lint rules without reason.
+- Never use any in source code. Use proper types instead.
+- Import absolute paths using @/ alias.
+
+14. Cursor Instructions
+- When creating new modules, always generate module, controller, service, repository, dto.
+- Always provide DTO with validation.
+- Always suggest pnpm prisma migrate dev command when schema changes.
+- Return full file path and full file content for new files.
+- Always run all CMDs with pnpm instead of npm
+
+15. Ignore the readme section, we don't need to create readme files.

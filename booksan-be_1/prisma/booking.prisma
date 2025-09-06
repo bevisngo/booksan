@@ -1,0 +1,216 @@
+model Booking {
+  id           String                     @id @default(cuid()) @map("_id")
+  playerId     String                     @map("player_id")
+  facilityId   String                     @map("facility_id")
+  courtId      String                     @map("court_id")
+  status       BookingStatus              @default(PENDING)
+  startAt      String                     @map("start_at")
+  endAt        String                     @map("end_at")
+  slotMinutes  Int                        @map("slot_minutes")
+  unitPrice    Int                        @map("unit_price")
+  totalPrice   Int                        @map("total_price")
+  isRecurrence Boolean                    @default(false) @map("is_recurrence")
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+  invites      BookingParticipantInvite[]
+  participants BookingParticipant[]
+  recurrences  BookingRecurrence[]
+  shareLinks   BookingShareLink[]
+  bookingSlots BookingSlot[]
+  court        Court                      @relation(fields: [courtId], references: [id])
+  facility     Facility                   @relation(fields: [facilityId], references: [id])
+  player       User                       @relation("PlayerBookings", fields: [playerId], references: [id])
+  feeCharges   FeeCharge[]
+  payments     Payment[]
+
+  @@map("bookings")
+}
+
+model BookingSlot {
+  id                   String                       @id @default(cuid()) @map("_id")
+  bookingId            String                       @map("booking_id")
+  courtId              String                       @map("court_id")
+  startTime            DateTime                     @map("start_time")
+  endTime              DateTime                     @map("end_time")
+  status               BookingStatus                @default(PENDING)
+  cancelReason         String?                      @map("cancel_reason")
+  cancelledBy          String?                      @map("cancelled_by")
+  cancelledAt          String?                      @map("cancelled_at")
+  createdBy            String                       @map("created_by")
+  createdAt            DateTime                     @default(now())
+  updatedAt            DateTime                     @updatedAt
+  recurrenceExceptions BookingRecurrenceException[] @relation("NewFieldSlot")
+  shareLinks           BookingShareLink[]
+  booking              Booking                      @relation(fields: [bookingId], references: [id])
+  cancelledByUser      User?                        @relation("SlotCanceller", fields: [cancelledBy], references: [id])
+  court                Court                        @relation(fields: [courtId], references: [id])
+  feeCharges           FeeCharge[]
+  payments             Payment[]
+
+  @@map("booking_slots")
+}
+
+model BookingParticipant {
+  id          String            @id @default(cuid()) @map("_id")
+  bookingId   String            @map("booking_id")
+  userId      String            @map("user_id")
+  role        ParticipantRole   @default(PLAYER)
+  status      ParticipantStatus @default(INVITED)
+  addedByUser String            @map("added_by_user")
+  note        String?
+  untilDate   String?           @map("until_date")
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  addedBy     User              @relation("ParticipantAddedBy", fields: [addedByUser], references: [id])
+  booking     Booking           @relation(fields: [bookingId], references: [id])
+  user        User              @relation("ParticipantUser", fields: [userId], references: [id])
+
+  @@map("booking_participants")
+}
+
+model BookingParticipantInvite {
+  id              String            @id @default(cuid()) @map("_id")
+  bookingId       String            @map("booking_id")
+  contactType     InviteContactType @map("contact_type")
+  contactValue    String            @map("contact_value")
+  status          InviteStatus      @default(SENT)
+  inviteToken     String            @map("invite_token")
+  invitedByUserId String            @map("invited_by_user_id")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  booking         Booking           @relation(fields: [bookingId], references: [id])
+  invitedBy       User              @relation("InviteSender", fields: [invitedByUserId], references: [id])
+
+  @@map("booking_participant_invites")
+}
+
+model BookingShareLink {
+  id              String         @id @default(cuid()) @map("_id")
+  bookingId       String         @map("booking_id")
+  bookingSlotId   String?        @map("booking_slot_id")
+  token           String         @unique
+  slug            String         @unique
+  scope           ShareLinkScope @default(PRIVATE)
+  revoked         Boolean        @default(false)
+  createdByUserId String         @map("created_by_user_id")
+  metadata        Json?
+  expiresAt       DateTime?      @map("expires_at")
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  booking         Booking        @relation(fields: [bookingId], references: [id])
+  bookingSlot     BookingSlot?   @relation(fields: [bookingSlotId], references: [id])
+  createdBy       User           @relation("ShareLinkCreator", fields: [createdByUserId], references: [id])
+
+  @@map("booking_share_links")
+}
+
+model BookingRecurrence {
+  id         String                       @id @default(cuid()) @map("_id")
+  bookingId  String                       @map("booking_id")
+  frequency  RecurrenceFrequency
+  interval   Int
+  byDay      Int[]                        @map("by_day")
+  byMonthDay Int[]                        @map("by_month_day")
+  startDate  String                       @map("start_date")
+  untilDate  String?                      @map("until_date")
+  createdAt  DateTime                     @default(now())
+  updatedAt  DateTime                     @updatedAt
+  exceptions BookingRecurrenceException[]
+  booking    Booking                      @relation(fields: [bookingId], references: [id])
+
+  @@map("booking_recurrences")
+}
+
+model BookingRecurrenceException {
+  id           String                         @id @default(cuid()) @map("_id")
+  recurrenceId String                         @map("recurrence_id")
+  date         DateTime
+  action       RecurrenceExceptionAction
+  newStartTime DateTime?                      @map("new_start_time")
+  newEndTime   DateTime?                      @map("new_end_time")
+  newFieldId   String?                        @map("new_field_id")
+  reasonType   RecurrenceExceptionReasonType? @map("reason_type")
+  reason       String?
+  createdBy    String                         @map("created_by")
+  createdAt    DateTime                       @default(now())
+  updatedAt    DateTime                       @updatedAt
+  newFieldSlot BookingSlot?                   @relation("NewFieldSlot", fields: [newFieldId], references: [id])
+  recurrence   BookingRecurrence              @relation(fields: [recurrenceId], references: [id])
+
+  @@map("booking_recurrence_exceptions")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+  EXPIRED
+  REFUNDED
+}
+
+enum ParticipantRole {
+  PLAYER
+  SPECTATOR
+  COACH
+  ORGANIZER
+}
+
+enum ParticipantStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+  PENDING
+  CHECKED_IN
+  NO_SHOW
+}
+
+enum InviteContactType {
+  EMAIL
+  PHONE
+  SMS
+  APP_USER
+  WHATSAPP
+  ZALO
+}
+
+enum InviteStatus {
+  SENT
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+enum ShareLinkScope {
+  PUBLIC
+  PRIVATE
+  INVITE_ONLY
+  TEAM_ONLY
+}
+
+enum RecurrenceFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  CUSTOM
+}
+
+enum RecurrenceExceptionAction {
+  CANCELLED
+  MODIFIED
+  MOVED
+  RESCHEDULED
+}
+
+enum RecurrenceExceptionReasonType {
+  MAINTENANCE
+  WEATHER
+  PERSONAL
+  OTHER
+  HOLIDAY
+  TOURNAMENT
+}
