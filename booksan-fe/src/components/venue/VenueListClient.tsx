@@ -1,106 +1,119 @@
-'use client'
+"use client";
 
-import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react'
-import { VenueCard } from '@/components/search/VenueCard'
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Venue, VenueSearchResult } from '@/features/search/types'
-import { fetchNextVenuesPage } from '@/app/(search)/actions'
-import { SearchParams } from '@/lib/search/params'
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import { VenueCard } from "@/components/search/VenueCard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Venue, VenueSearchResult } from "@/features/search/types";
+import { fetchNextVenuesPage } from "@/app/(search)/actions";
+import { SearchParams } from "@/lib/search/params";
+import { useRouter } from "next/navigation";
 
 interface VenueListClientProps {
-  initialData: VenueSearchResult
-  searchParams: SearchParams
+  initialData: VenueSearchResult;
+  searchParams: SearchParams;
 }
 
-export function VenueListClient({ initialData, searchParams }: VenueListClientProps) {
-  const [venues, setVenues] = useState<Venue[]>(initialData.venues)
-  const [hasMore, setHasMore] = useState(initialData.hasMore)
-  const [nextCursor, setNextCursor] = useState(initialData.nextCursor)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
-  
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const loadMoreRef = useRef<HTMLDivElement | null>(null)
+export function VenueListClient({
+  initialData,
+  searchParams,
+}: VenueListClientProps) {
+  const router = useRouter();
+  const [venues, setVenues] = useState<Venue[]>(initialData.venues);
+  const [hasMore, setHasMore] = useState(initialData.hasMore);
+  const [nextCursor, setNextCursor] = useState(initialData.nextCursor);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   // Reset state when searchParams change (new search)
   useEffect(() => {
-    setVenues(initialData.venues)
-    setHasMore(initialData.hasMore)
-    setNextCursor(initialData.nextCursor)
-    setError(null)
-  }, [initialData])
+    setVenues(initialData.venues);
+    setHasMore(initialData.hasMore);
+    setNextCursor(initialData.nextCursor);
+    setError(null);
+  }, [initialData]);
 
   const loadMoreVenues = useCallback(() => {
-    if (!nextCursor || isLoading || isPending) return
+    if (!nextCursor || isLoading || isPending) return;
 
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
 
     startTransition(async () => {
       try {
-        const result = await fetchNextVenuesPage(searchParams, nextCursor)
-        
+        const result = await fetchNextVenuesPage(searchParams, nextCursor);
+
         if (result.success && result.data) {
-          setVenues(prev => [...prev, ...result.data!.venues])
-          setHasMore(result.data.hasMore)
-          setNextCursor(result.data.nextCursor)
+          setVenues((prev) => [...prev, ...result.data!.venues]);
+          setHasMore(result.data.hasMore);
+          setNextCursor(result.data.nextCursor);
         } else {
-          setError(result.error || 'Failed to load more venues')
+          setError(result.error || "Failed to load more venues");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load more venues')
+        setError(
+          err instanceof Error ? err.message : "Failed to load more venues"
+        );
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    })
-  }, [nextCursor, isLoading, isPending, searchParams])
+    });
+  }, [nextCursor, isLoading, isPending, searchParams]);
 
   // Set up intersection observer for infinite scroll
   useEffect(() => {
-    if (!hasMore || isLoading || isPending) return
+    if (!hasMore || isLoading || isPending) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const [entry] = entries
+        const [entry] = entries;
         if (entry && entry.isIntersecting && nextCursor) {
-          loadMoreVenues()
+          loadMoreVenues();
         }
       },
       {
         threshold: 0.1,
-        rootMargin: '100px', // Load more when user is 100px from the bottom
+        rootMargin: "100px", // Load more when user is 100px from the bottom
       }
-    )
+    );
 
-    observerRef.current = observer
+    observerRef.current = observer;
 
     if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current)
+      observer.observe(loadMoreRef.current);
     }
 
     return () => {
-      observer.disconnect()
-    }
-  }, [hasMore, isLoading, isPending, nextCursor, loadMoreVenues])
+      observer.disconnect();
+    };
+  }, [hasMore, isLoading, isPending, nextCursor, loadMoreVenues]);
 
   const handleViewDetails = (venue: Venue) => {
     // Navigate to venue details page
-    window.location.href = `/venues/${venue.id}`
-  }
+    router.push(`/venues/${venue.slug}`);
+  };
 
   const handleCall = (venue: Venue) => {
     if (venue.phone) {
-      window.open(`tel:${venue.phone}`, '_self')
+      window.open(`tel:${venue.phone}`, "_self");
     }
-  }
+  };
 
   const handleVisitWebsite = (venue: Venue) => {
     if (venue.website) {
-      window.open(venue.website, '_blank')
+      window.open(venue.website, "_blank");
     }
-  }
+  };
 
   if (venues.length === 0 && !isLoading && !isPending) {
     return (
@@ -111,7 +124,7 @@ export function VenueListClient({ initialData, searchParams }: VenueListClientPr
           </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -119,7 +132,7 @@ export function VenueListClient({ initialData, searchParams }: VenueListClientPr
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {initialData.total} venue{initialData.total !== 1 ? 's' : ''} found
+          {initialData.total} venue{initialData.total !== 1 ? "s" : ""} found
           {venues.length < initialData.total && (
             <span className="ml-2 text-xs text-blue-600">
               (showing {venues.length} of {initialData.total})
@@ -184,8 +197,8 @@ export function VenueListClient({ initialData, searchParams }: VenueListClientPr
               <p className="text-red-800 mb-4">{error}</p>
               <button
                 onClick={() => {
-                  setError(null)
-                  loadMoreVenues()
+                  setError(null);
+                  loadMoreVenues();
                 }}
                 className="text-red-600 hover:text-red-800 underline"
               >
@@ -198,9 +211,14 @@ export function VenueListClient({ initialData, searchParams }: VenueListClientPr
 
       {/* Intersection observer target */}
       {hasMore && !error && (
-        <div ref={loadMoreRef} className="h-10 flex items-center justify-center">
+        <div
+          ref={loadMoreRef}
+          className="h-10 flex items-center justify-center"
+        >
           {!isLoading && !isPending && (
-            <p className="text-sm text-muted-foreground">Scroll to load more venues</p>
+            <p className="text-sm text-muted-foreground">
+              Scroll to load more venues
+            </p>
           )}
         </div>
       )}
@@ -214,5 +232,5 @@ export function VenueListClient({ initialData, searchParams }: VenueListClientPr
         </div>
       )}
     </div>
-  )
+  );
 }

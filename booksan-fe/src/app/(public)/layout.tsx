@@ -17,12 +17,12 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
               <h1 className="text-2xl font-bold text-gradient">Booksan</h1>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
-              <a
+              <Link
                 href="/venues/search"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Find Venues
-              </a>
+              </Link>
               <a
                 href="/about"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -61,12 +61,12 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <a
+                  <Link
                     href="/venues/search"
                     className="hover:text-foreground transition-colors"
                   >
                     Find Venues
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a

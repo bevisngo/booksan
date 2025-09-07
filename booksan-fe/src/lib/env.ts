@@ -8,7 +8,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:8081"),
 
   // API
-  NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:3000"),
+  NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:8000"),
   NEXT_PUBLIC_BASE_API: z.string().url().default("http://localhost:8000/v1"),
   API_SECRET_KEY: z.string().optional(),
 

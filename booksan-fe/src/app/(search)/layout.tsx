@@ -17,12 +17,12 @@ export default function SearchLayout({ children }: SearchLayoutProps) {
               <h1 className="text-2xl font-bold text-gradient">Booksan</h1>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
-              <a
+              <Link
                 href="/venues/search"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Find Venues
-              </a>
+              </Link>
               <a
                 href="/about"
                 className="text-muted-foreground hover:text-foreground transition-colors"

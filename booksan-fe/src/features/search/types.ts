@@ -113,6 +113,7 @@ export interface Venue {
   rating?: number
   reviewCount?: number
   distance?: number // Distance in km when location is provided
+  slug?: string
 }
 
 // Location interface for geolocation

@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -24,14 +25,14 @@ export default function HomePage() {
             we have it all.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/venues/search">
+            <Link href="/venues/search">
               <Button size="lg">Find Venues</Button>
-            </a>
-            <a href="/auth/signup">
+            </Link>
+            <Link href="/auth/signup">
               <Button variant="outline" size="lg">
                 List Your Venue
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>

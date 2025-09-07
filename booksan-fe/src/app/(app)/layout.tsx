@@ -16,30 +16,30 @@ export default function AppLayout({ children }: AppLayoutProps) {
               <h1 className="text-2xl font-bold text-gradient">Booksan</h1>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
-              <a
+              <Link
                 href="/dashboard"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Dashboard
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/venues"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Venues
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/bookings"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Bookings
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/search"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Search
-              </a>
+              </Link>
             </nav>
           </div>
 

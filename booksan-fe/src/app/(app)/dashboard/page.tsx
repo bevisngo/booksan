@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { UserProfile } from '@/components/auth/UserProfile'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import Link from 'next/link'
 
 export default function DashboardPage() {
   return (
@@ -118,18 +119,18 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
-              <a href="/venues/search">
+              <Link href="/venues/search">
                 <Button className="w-full">Find Venues</Button>
-              </a>
-              <a href="/venues">
+              </Link>
+              <Link href="/venues">
                 <Button variant="outline" className="w-full">Browse Venues</Button>
-              </a>
-              <a href="/profile">
+              </Link>
+              <Link href="/profile">
                 <Button variant="outline" className="w-full">Edit Profile</Button>
-              </a>
-              <a href="/wallet">
+              </Link>
+              <Link href="/wallet">
                 <Button variant="outline" className="w-full">Manage Wallet</Button>
-              </a>
+              </Link>
             </div>
             
             <div className="mt-6 p-4 bg-muted rounded-lg">
