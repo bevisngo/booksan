@@ -10,6 +10,7 @@ import {
 import {
   SignupDto,
   LoginDto,
+  OwnerLoginDto,
   OAuthCallbackDto,
   ZaloLoginDto,
   RefreshTokenDto,
@@ -19,6 +20,7 @@ import {
 import {
   SignupUseCase,
   LoginUseCase,
+  OwnerLoginUseCase,
   OAuthLoginUseCase,
   RefreshTokenUseCase,
   GetCurrentUserUseCase,
@@ -32,6 +34,7 @@ export class AuthController {
   constructor(
     private readonly signupUseCase: SignupUseCase,
     private readonly loginUseCase: LoginUseCase,
+    private readonly ownerLoginUseCase: OwnerLoginUseCase,
     private readonly oauthLoginUseCase: OAuthLoginUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
@@ -51,6 +54,16 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: LoginDto): Promise<{ data: AuthResponseDto }> {
     const data = await this.loginUseCase.execute(dto);
+    return { data };
+  }
+
+  @Public()
+  @Post('owner/login')
+  @HttpCode(HttpStatus.OK)
+  async ownerLogin(
+    @Body() dto: OwnerLoginDto,
+  ): Promise<{ data: AuthResponseDto }> {
+    const data = await this.ownerLoginUseCase.execute(dto);
     return { data };
   }
 

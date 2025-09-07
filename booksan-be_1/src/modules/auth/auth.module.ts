@@ -13,6 +13,7 @@ import { JwtService, HashService, OAuthService } from './services';
 import {
   SignupUseCase,
   LoginUseCase,
+  OwnerLoginUseCase,
   OAuthLoginUseCase,
   RefreshTokenUseCase,
   GetCurrentUserUseCase,
@@ -50,6 +51,7 @@ import { PrismaModule } from '@/core/prisma/prisma.module';
     // Use Cases
     SignupUseCase,
     LoginUseCase,
+    OwnerLoginUseCase,
     OAuthLoginUseCase,
     RefreshTokenUseCase,
     GetCurrentUserUseCase,

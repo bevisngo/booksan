@@ -24,7 +24,7 @@ model User {
   paymentsAsPayer       Payment[]                  @relation("PayerUser")
   subscriptions         Subscription[]
 
-  @@unique([phone])
+  @@unique([phone, role])
   @@map("users")
 }
 
