@@ -95,6 +95,17 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
 
       {/* Mobile sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden ml-2"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Open sidebar</span>
+          </Button>
+        </SheetTrigger>
         <SheetContent side="left" className="p-0 w-64">
           <div className="flex-1 flex flex-col min-h-0">
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
@@ -140,17 +151,6 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
       <div className="flex flex-col flex-1 md:pl-64">
         {/* Top navigation */}
         <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-background border-b border-border">
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden ml-2"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Open sidebar</span>
-            </Button>
-          </SheetTrigger>
 
           <div className="flex-1 px-4 flex justify-between items-center">
             <div className="flex-1" />

@@ -2,23 +2,19 @@ import { cookies } from 'next/headers';
 import type { User, AuthResponse } from './auth';
 
 export class AuthServiceServer {
-  private baseUrl: string;
-
-  constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
-  }
-
   async getCurrentUser(): Promise<User | null> {
+    const cookieHeader = await this.getCookieHeader();
+    console.log('cookie header', cookieHeader);
     try {
-      const token = await this.getAccessToken();
-      if (!token) return null;
-
-      const response = await fetch(`${this.baseUrl}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: 'no-store',
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:8000/v1'}/api/auth/me`,
+        {
+          headers: {
+            Cookie: await this.getCookieHeader(),
+          },
+          cache: 'no-store',
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -40,18 +36,21 @@ export class AuthServiceServer {
     phone?: string;
     password: string;
   }): Promise<AuthResponse> {
-    const response = await fetch(`${this.baseUrl}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:8000/v1'}/api/auth/owner/login`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      }
+    );
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Login failed');
+      throw new Error(result.message || 'Owner login failed');
     }
 
     // Set HTTP-only cookies
@@ -62,15 +61,16 @@ export class AuthServiceServer {
 
   async logout(): Promise<void> {
     try {
-      const token = await this.getAccessToken();
-      if (token) {
-        await fetch(`${this.baseUrl}/auth/logout`, {
+      console.log('logout');
+      await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:8000/v1'}/api/auth/logout`,
+        {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Cookie: await this.getCookieHeader(),
           },
-        });
-      }
+        }
+      );
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -93,7 +93,7 @@ export class AuthServiceServer {
     refreshToken: string
   ): Promise<void> {
     const cookieStore = await cookies();
-    
+
     cookieStore.set('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -117,30 +117,43 @@ export class AuthServiceServer {
 
   async refreshAccessToken(): Promise<boolean> {
     try {
-      const refreshToken = await this.getRefreshToken();
-      if (!refreshToken) return false;
-
-      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:8000/v1'}/api/auth/refresh`,
+        {
+          method: 'POST',
+          headers: {
+            Cookie: await this.getCookieHeader(),
+          },
+        }
+      );
 
       if (!response.ok) {
+        console.log('token refresh failed');
         await this.clearTokens();
         return false;
       }
 
       const result = await response.json();
-      await this.setTokens(result.data.accessToken, refreshToken);
+      await this.setTokens(result.data.accessToken, result.data.refreshToken);
       return true;
     } catch (error) {
+      console.log('token refresh error');
       console.error('Token refresh error:', error);
       await this.clearTokens();
       return false;
     }
+  }
+
+  private async getCookieHeader(): Promise<string> {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
+    const refreshToken = cookieStore.get('refreshToken')?.value;
+
+    const cookieStrings: string[] = [];
+    if (accessToken) cookieStrings.push(`accessToken=${accessToken}`);
+    if (refreshToken) cookieStrings.push(`refreshToken=${refreshToken}`);
+
+    return cookieStrings.join('; ');
   }
 }
 

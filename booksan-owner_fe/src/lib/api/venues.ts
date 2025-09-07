@@ -44,7 +44,7 @@ export class VenueApi {
   }
 
   static async uploadCourtMedia(id: string, file: File): Promise<{ url: string; id: string }> {
-    return apiClient.uploadFile(`/courts/${id}/media`, file);
+    return apiClient.uploadFile(`/upload/courts/${id}/media`, file);
   }
 
   static async deleteCourtMedia(courtId: string, mediaId: string): Promise<void> {

@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 
 export default async function Venues() {
   const user = await authServiceServer.getCurrentUser();
-  
+
   if (!user) {
     redirect('/auth/login');
   }

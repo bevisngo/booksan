@@ -1,4 +1,5 @@
-import { authServiceServer } from './auth-server';
+// Note: Token refresh is handled by the browser automatically via cookies
+// No need to import server-side auth service here
 
 export class ApiError extends Error {
   constructor(
@@ -22,7 +23,8 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
+    // Use NextJS API routes as middleware instead of calling backend directly
+    this.baseUrl = '/api';
   }
 
   async request<T = any>(
@@ -43,11 +45,12 @@ class ApiClient {
     let response = await fetch(url, config);
 
     // Handle token refresh for 401 errors
+    // Note: Token refresh is handled automatically by the browser via HTTP-only cookies
+    // If we get a 401, the user needs to re-authenticate
     if (response.status === 401) {
-      const refreshed = await authServiceServer.refreshAccessToken();
-      if (refreshed) {
-        // Retry the request
-        response = await fetch(url, config);
+      // Redirect to login page or handle authentication error
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth/login';
       }
     }
 
@@ -61,7 +64,7 @@ class ApiClient {
       );
     }
 
-    return result.data || result;
+    return (result.data || result) as T;
   }
 
   async get<T = any>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -125,7 +128,7 @@ class ApiClient {
       );
     }
 
-    return result.data || result;
+    return (result.data || result) as any;
   }
 }
 

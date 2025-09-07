@@ -145,7 +145,7 @@ The app integrates with the existing Booksan NestJS backend:
 
 ### API Endpoints Used
 
-- `POST /auth/login` - User authentication
+- `POST /auth/owner/login` - Owner authentication
 - `GET /auth/me` - Get current user
 - `POST /auth/logout` - User logout
 - `GET /courts` - List venues/courts

@@ -1,20 +1,14 @@
 'use client';
 
-import type { User, AuthResponse } from './auth';
+import type { AuthResponse } from './auth';
 
 export class AuthServiceClient {
-  private baseUrl: string;
-
-  constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
-  }
-
   async login(credentials: {
     email?: string;
     phone?: string;
     password: string;
   }): Promise<AuthResponse> {
-    const response = await fetch(`${this.baseUrl}/auth/login`, {
+    const response = await fetch('/api/auth/owner/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -25,7 +19,7 @@ export class AuthServiceClient {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Login failed');
+      throw new Error(result.message || 'Owner login failed');
     }
 
     return result;
@@ -33,7 +27,7 @@ export class AuthServiceClient {
 
   async logout(): Promise<void> {
     try {
-      await fetch(`${this.baseUrl}/auth/logout`, {
+      await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       });
