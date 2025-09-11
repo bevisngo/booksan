@@ -12,7 +12,8 @@ import {
   Trash2,
   Globe,
   Phone,
-  Mail
+  Mail,
+  Settings
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -149,6 +150,13 @@ export function VenueCard({ venue, onUpdate }: VenueCardProps) {
                 <Link href={`/venues/${venue.id}`}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
+                </Link>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem asChild>
+                <Link href={`/venues/${venue.id}/courts`}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Manage Courts
                 </Link>
               </DropdownMenuItem>
               

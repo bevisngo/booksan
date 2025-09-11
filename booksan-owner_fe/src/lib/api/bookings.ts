@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api';
+import { AuthCookieService } from '@/lib/cookie-service';
 import type {
   Booking,
   CreateBookingData,
@@ -70,10 +71,15 @@ export class BookingApi {
     const queryString = params.toString();
     const endpoint = `/bookings/export${queryString ? `?${queryString}` : ''}`;
     
-    const response = await fetch(`${apiClient['baseUrl']}${endpoint}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/v1';
+    const accessToken = AuthCookieService.getAccessToken();
+
+    const response = await fetch(`${baseUrl}${endpoint}`, {
       headers: {
-        'Authorization': `Bearer ${await this.getToken()}`,
+        'Content-Type': 'application/json',
+        ...(accessToken && { 'Authorization': `Bearer ${accessToken}` }),
       },
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -83,11 +89,6 @@ export class BookingApi {
     return response.blob();
   }
 
-  private static async getToken(): Promise<string | null> {
-    // This would normally get the token from cookies
-    // For now, we'll return null and let the apiClient handle it
-    return null;
-  }
 }
 
 export const bookingApi = BookingApi;

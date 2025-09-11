@@ -1,5 +1,4 @@
-// Note: Token refresh is handled by the browser automatically via cookies
-// No need to import server-side auth service here
+import { AuthCookieService } from './cookie-service';
 
 export class ApiError extends Error {
   constructor(
@@ -23,8 +22,8 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    // Use NextJS API routes as middleware instead of calling backend directly
-    this.baseUrl = '/api';
+    // Call backend API directly
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/v1';
   }
 
   async request<T = any>(
@@ -33,9 +32,13 @@ class ApiClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
+    // Get access token from cookie (client-side)
+    const accessToken = typeof window !== 'undefined' ? AuthCookieService.getAccessToken() : null;
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        ...(accessToken && { 'Authorization': `Bearer ${accessToken}` }),
         ...options.headers,
       },
       credentials: 'include', // Include cookies for authentication
@@ -44,14 +47,10 @@ class ApiClient {
 
     let response = await fetch(url, config);
 
-    // Handle token refresh for 401 errors
-    // Note: Token refresh is handled automatically by the browser via HTTP-only cookies
-    // If we get a 401, the user needs to re-authenticate
-    if (response.status === 401) {
-      // Redirect to login page or handle authentication error
-      if (typeof window !== 'undefined') {
-        window.location.href = '/auth/login';
-      }
+    // Handle 401 errors - redirect to login
+    if (response.status === 401 && typeof window !== 'undefined') {
+      window.location.href = '/auth/login';
+      return Promise.reject(new ApiError(401, 'Authentication required'));
     }
 
     const result: ApiResponse<T> = await response.json().catch(() => ({}));
@@ -107,9 +106,13 @@ class ApiClient {
     const formData = new FormData();
     formData.append('file', file);
 
+    // Get access token from cookie (client-side)
+    const accessToken = typeof window !== 'undefined' ? AuthCookieService.getAccessToken() : null;
+
     const config: RequestInit = {
       method: 'POST',
       headers: {
+        ...(accessToken && { 'Authorization': `Bearer ${accessToken}` }),
         ...options?.headers,
       },
       credentials: 'include',
@@ -117,7 +120,14 @@ class ApiClient {
       ...options,
     };
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+    let response = await fetch(`${this.baseUrl}${endpoint}`, config);
+
+    // Handle 401 errors - redirect to login
+    if (response.status === 401 && typeof window !== 'undefined') {
+      window.location.href = '/auth/login';
+      return Promise.reject(new ApiError(401, 'Authentication required'));
+    }
+
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
@@ -130,6 +140,8 @@ class ApiClient {
 
     return (result.data || result) as any;
   }
+
+
 }
 
 export const apiClient = new ApiClient();

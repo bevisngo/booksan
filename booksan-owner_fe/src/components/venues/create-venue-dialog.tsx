@@ -90,13 +90,15 @@ export function CreateVenueDialog({
   const onSubmit = async (data: VenueFormData) => {
     try {
       setIsSubmitting(true);
-      await venueApi.createCourt(data);
+      // TODO: Implement venue creation API endpoint in backend
+      // await venueApi.createVenue(data);
       toast({
-        title: 'Venue created successfully',
-        description: 'Your new venue has been added to your portfolio.',
+        title: 'Venue creation not implemented',
+        description: 'Venue creation functionality is not yet available.',
+        variant: 'destructive',
       });
-      reset();
-      onSuccess();
+      // reset();
+      // onSuccess();
     } catch (error: any) {
       toast({
         variant: 'destructive',

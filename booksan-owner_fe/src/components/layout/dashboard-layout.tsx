@@ -10,6 +10,7 @@ import {
   Menu,
   User,
   LogOut,
+  MapPin,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,11 @@ const navigation = [
     name: 'Venues',
     href: '/venues',
     icon: Building2,
+  },
+  {
+    name: 'Courts',
+    href: '/courts',
+    icon: MapPin,
   },
   {
     name: 'Bookings',

@@ -2,15 +2,15 @@
 
 import * as React from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { PaymentSettingsPage } from '@/components/payments/payment-settings-page';
+import { CourtsPage } from '@/components/courts/courts-page';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 
-export default function PaymentSettings() {
+export default function Courts() {
   return (
     <ProtectedRoute requiredRole="OWNER">
       {(user) => (
         <DashboardLayout user={user}>
-          <PaymentSettingsPage />
+          <CourtsPage />
         </DashboardLayout>
       )}
     </ProtectedRoute>

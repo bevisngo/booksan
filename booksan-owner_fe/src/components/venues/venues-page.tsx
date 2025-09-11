@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search, Filter, Building2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -163,7 +163,7 @@ export function VenuesPage() {
             </Card>
           ))}
         </div>
-      ) : venues?.courts.length === 0 ? (
+      ) : venues?.courts?.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-12">
@@ -188,7 +188,7 @@ export function VenuesPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {venues?.courts.map((venue) => (
+          {venues?.courts?.map((venue) => (
             <VenueCard
               key={venue.id}
               venue={venue}

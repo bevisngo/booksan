@@ -1,23 +1,18 @@
+'use client';
+
 import * as React from 'react';
-import { authServiceServer } from '@/lib/auth-server';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { BookingsPage } from '@/components/bookings/bookings-page';
-import { redirect } from 'next/navigation';
+import { ProtectedRoute } from '@/components/auth/protected-route';
 
-export default async function Bookings() {
-  const user = await authServiceServer.getCurrentUser();
-  
-  if (!user) {
-    redirect('/auth/login');
-  }
-
-  if (user.role !== 'OWNER') {
-    redirect('/auth/login');
-  }
-
+export default function Bookings() {
   return (
-    <DashboardLayout user={user}>
-      <BookingsPage />
-    </DashboardLayout>
+    <ProtectedRoute requiredRole="OWNER">
+      {(user) => (
+        <DashboardLayout user={user}>
+          <BookingsPage />
+        </DashboardLayout>
+      )}
+    </ProtectedRoute>
   );
 }
