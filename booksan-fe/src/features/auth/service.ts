@@ -2,7 +2,6 @@ import {
   AuthResponse,
   SignupRequest,
   LoginRequest,
-  RefreshResponse,
   MeResponse,
   OAuthUrlResponse,
   User,
@@ -92,7 +91,6 @@ class AuthService {
     }
     return data;
   }
-
 
   async getCurrentUser(): Promise<User | null> {
     try {
