@@ -1,11 +1,5 @@
 import { Public } from '@/modules/auth/decorators';
-import {
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import {
   ApiOperation,
   ApiParam,
@@ -19,10 +13,7 @@ import {
   CourtWithFacilityResponseDto,
 } from '../dto/court.dto';
 import { CourtService } from '../services/court.service';
-import {
-  GetCourtByIdUseCase,
-  GetCourtsByFacilityUseCase,
-} from '../use-cases';
+import { GetCourtByIdUseCase, GetCourtsByFacilityUseCase } from '../use-cases';
 
 @ApiTags('Player Courts')
 @Controller('player/courts')
@@ -69,14 +60,14 @@ export class PlayerCourtController {
   ): Promise<CourtResponseDto[]> {
     // Get only active courts for players
     const courts = await this.getCourtsByFacilityUseCase.execute(facilityId);
-    
+
     // Filter courts based on query parameters and only show active courts
     return courts.filter(court => {
       const isActive = court.isActive;
       const sportMatch = !sport || court.sport === sport;
       const surfaceMatch = !surface || court.surface === surface;
       const indoorMatch = indoor === undefined || court.indoor === indoor;
-      
+
       return isActive && sportMatch && surfaceMatch && indoorMatch;
     });
   }
@@ -94,12 +85,12 @@ export class PlayerCourtController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CourtWithFacilityResponseDto> {
     const court = await this.getCourtByIdUseCase.execute(id);
-    
+
     // Only show active courts to players
     if (!court.isActive) {
       throw new Error('Court not found or not available');
     }
-    
+
     return court;
   }
 
@@ -117,7 +108,7 @@ export class PlayerCourtController {
     @Param('sport') sport: Sport,
   ): Promise<CourtResponseDto[]> {
     const courts = await this.getCourtsByFacilityUseCase.execute(facilityId);
-    
+
     // Filter by sport and only show active courts
     return courts.filter(court => court.isActive && court.sport === sport);
   }
@@ -150,11 +141,11 @@ export class PlayerCourtController {
     // TODO: Implement availability check logic
     // For now, return active courts with basic filtering
     const courts = await this.getCourtsByFacilityUseCase.execute(facilityId);
-    
+
     return courts.filter(court => {
       const isActive = court.isActive;
       const sportMatch = !sport || court.sport === sport;
-      
+
       return isActive && sportMatch;
     });
   }

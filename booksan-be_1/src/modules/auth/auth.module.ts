@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 
 // Controllers
-import { AuthController } from './controllers';
+import { AuthController, PlayerAuthController, OwnerAuthController } from './controllers';
 
 // Services
 import { JwtService, HashService, OAuthService } from './services';
@@ -40,7 +40,7 @@ import { PrismaModule } from '@/core/prisma/prisma.module';
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, PlayerAuthController, OwnerAuthController],
   providers: [
     // Services
     JwtService,

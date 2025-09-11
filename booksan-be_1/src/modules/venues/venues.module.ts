@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import {
   VenueSearchController,
   FacilityProfileController,
-  FacilityPageController,
-  FacilityTemplateController,
   VenueSitemapController,
+  PlayerVenueController,
+  OwnerVenueController,
 } from './controllers';
 import { VenueSearchService, FacilityProfileService } from './services';
 import {
@@ -26,9 +26,9 @@ import { AuthModule } from '@/modules/auth';
   controllers: [
     VenueSearchController,
     FacilityProfileController,
-    FacilityPageController,
-    FacilityTemplateController,
     VenueSitemapController,
+    PlayerVenueController,
+    OwnerVenueController,
   ],
   providers: [
     VenueSearchService,

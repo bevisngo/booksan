@@ -6,6 +6,16 @@ export interface JwtPayload {
   sub: string;
   email: string;
   role: string;
+  facilityId?: string; // Optional - only for owners
+}
+
+export interface PlayerJwtPayload extends JwtPayload {
+  role: 'PLAYER';
+}
+
+export interface OwnerJwtPayload extends JwtPayload {
+  role: 'OWNER';
+  facilityId: string; // Required for owners
 }
 
 @Injectable()

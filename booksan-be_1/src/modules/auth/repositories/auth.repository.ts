@@ -21,6 +21,15 @@ export interface UserProfile {
   updatedAt: Date;
 }
 
+export interface OwnerProfile extends UserProfile {
+  facilityId: string;
+  facility: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+}
+
 @Injectable()
 export class AuthRepository extends BaseRepository<
   User,
@@ -137,5 +146,108 @@ export class AuthRepository extends BaseRepository<
     return this.search(searchTerm, ['fullname', 'email'], {}).then(
       result => result.data,
     );
+  }
+
+  async findOwnerWithFacility(id: string): Promise<OwnerProfile | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id, role: UserRole.OWNER },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        ownedFacilities: {
+          take: 1, // Assuming one facility per owner for now
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+
+    if (!user || user.ownedFacilities.length === 0) {
+      return null;
+    }
+
+    return {
+      ...user,
+      facilityId: user.ownedFacilities[0].id,
+      facility: user.ownedFacilities[0],
+    };
+  }
+
+  async findOwnerByEmailWithFacility(
+    email: string,
+  ): Promise<OwnerProfile | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { email, role: UserRole.OWNER },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        ownedFacilities: {
+          take: 1,
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+
+    if (!user || user.ownedFacilities.length === 0) {
+      return null;
+    }
+
+    return {
+      ...user,
+      facilityId: user.ownedFacilities[0].id,
+      facility: user.ownedFacilities[0],
+    };
+  }
+
+  async findOwnerByPhoneWithFacility(
+    phone: string,
+  ): Promise<OwnerProfile | null> {
+    const user = await this.prisma.user.findFirst({
+      where: { phone, role: UserRole.OWNER },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        ownedFacilities: {
+          take: 1,
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+
+    if (!user || user.ownedFacilities.length === 0) {
+      return null;
+    }
+
+    return {
+      ...user,
+      facilityId: user.ownedFacilities[0].id,
+      facility: user.ownedFacilities[0],
+    };
   }
 }
