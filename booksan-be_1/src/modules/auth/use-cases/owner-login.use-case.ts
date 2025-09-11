@@ -25,13 +25,21 @@ export class OwnerLoginUseCase {
     // Find user with OWNER role
     let user;
     if (dto.email) {
-      user = await this.authRepository.findUserByEmailAndRole(dto.email, UserRole.OWNER);
+      user = await this.authRepository.findUserByEmailAndRole(
+        dto.email,
+        UserRole.OWNER,
+      );
     } else if (dto.phone) {
-      user = await this.authRepository.findUserByPhoneAndRole(dto.phone, UserRole.OWNER);
+      user = await this.authRepository.findUserByPhoneAndRole(
+        dto.phone,
+        UserRole.OWNER,
+      );
     }
 
     if (!user) {
-      throw new UnauthorizedException('Owner account not found or invalid credentials');
+      throw new UnauthorizedException(
+        'Owner account not found or invalid credentials',
+      );
     }
 
     // Verify password
@@ -43,8 +51,8 @@ export class OwnerLoginUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generate tokens
-    const { accessToken, refreshToken } = this.jwtService.generateTokens({
+    // Generate access token
+    const accessToken = this.jwtService.generateAccessToken({
       sub: user.id,
       email: user.email || '',
       role: user.role,
@@ -52,7 +60,6 @@ export class OwnerLoginUseCase {
 
     return {
       accessToken,
-      refreshToken,
       user: {
         id: user.id,
         fullname: user.fullname,

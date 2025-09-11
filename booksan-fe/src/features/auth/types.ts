@@ -10,15 +10,9 @@ export interface User {
   updatedAt: string;
 }
 
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
 export interface AuthResponse {
   data: {
     accessToken: string;
-    refreshToken: string;
     user: User;
   };
 }
@@ -37,15 +31,6 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface RefreshRequest {
-  refreshToken: string;
-}
-
-export interface RefreshResponse {
-  data: {
-    accessToken: string;
-  };
-}
 
 export interface MeResponse {
   data: User;
@@ -87,7 +72,6 @@ export interface AuthContextType {
   login: (credentials: LoginRequest) => Promise<AuthResponse>;
   signup: (userData: SignupRequest) => Promise<AuthResponse>;
   logout: () => Promise<void>;
-  refreshToken: () => Promise<boolean>;
   getCurrentUser: () => Promise<User | null>;
   // OAuth methods
   getGoogleAuthUrl: () => Promise<OAuthUrlResponse>;

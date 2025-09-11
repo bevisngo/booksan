@@ -22,24 +22,17 @@ class AuthService {
     return localStorage.getItem("accessToken");
   }
 
-  getRefreshToken(): string | null {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("refreshToken");
-  }
-
-  setTokens(accessToken: string, refreshToken: string): void {
+  setAccessToken(accessToken: string): void {
     if (typeof window === "undefined") return;
     localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
   }
 
   clearTokens(): void {
     if (typeof window === "undefined") return;
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
   }
 
-  // API request helper with automatic token refresh
+  // API request helper
   async apiRequest(
     endpoint: string,
     options: RequestInit = {}
@@ -56,19 +49,13 @@ class AuthService {
       ...options,
     };
 
-    let response = await fetch(url, config);
+    const response = await fetch(url, config);
 
-    // Handle 401 Unauthorized - try to refresh token
+    // Handle 401 Unauthorized - clear tokens and redirect to login
     if (response.status === 401) {
-      const refreshed = await this.refreshAccessToken();
-      if (refreshed) {
-        // Retry original request with new token
-        const newToken = this.getAccessToken();
-        config.headers = {
-          ...config.headers,
-          Authorization: `Bearer ${newToken}`,
-        };
-        response = await fetch(url, config);
+      this.clearTokens();
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth/login";
       }
     }
 
@@ -84,7 +71,7 @@ class AuthService {
 
     const data = await response.json();
     if (response.ok) {
-      this.setTokens(data.data.accessToken, data.data.refreshToken);
+      this.setAccessToken(data.data.accessToken);
     } else {
       throw new Error(data.message || "Signup failed");
     }
@@ -99,37 +86,13 @@ class AuthService {
 
     const data = await response.json();
     if (response.ok) {
-      this.setTokens(data.data.accessToken, data.data.refreshToken);
+      this.setAccessToken(data.data.accessToken);
     } else {
       throw new Error(data.message || "Login failed");
     }
     return data;
   }
 
-  async refreshAccessToken(): Promise<boolean> {
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) return false;
-
-    try {
-      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (response.ok) {
-        const data: RefreshResponse = await response.json();
-        this.setTokens(data.data.accessToken, refreshToken);
-        return true;
-      } else {
-        this.clearTokens();
-        return false;
-      }
-    } catch {
-      this.clearTokens();
-      return false;
-    }
-  }
 
   async getCurrentUser(): Promise<User | null> {
     try {
@@ -175,7 +138,7 @@ class AuthService {
     );
     const data = await response.json();
     if (response.ok) {
-      this.setTokens(data.data.accessToken, data.data.refreshToken);
+      this.setAccessToken(data.data.accessToken);
     } else {
       throw new Error(data.message || "Google authentication failed");
     }
@@ -193,7 +156,7 @@ class AuthService {
     );
     const data = await response.json();
     if (response.ok) {
-      this.setTokens(data.data.accessToken, data.data.refreshToken);
+      this.setAccessToken(data.data.accessToken);
     } else {
       throw new Error(data.message || "Facebook authentication failed");
     }
@@ -212,7 +175,7 @@ class AuthService {
     });
     const data = await response.json();
     if (response.ok) {
-      this.setTokens(data.data.accessToken, data.data.refreshToken);
+      this.setAccessToken(data.data.accessToken);
     } else {
       throw new Error(data.message || "Zalo authentication failed");
     }

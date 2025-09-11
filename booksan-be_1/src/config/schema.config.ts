@@ -8,9 +8,7 @@ export const envSchema = Joi.object({
   DATABASE_URL: Joi.string().uri().required(),
   REDIS_URL: Joi.string().uri().optional(),
   JWT_SECRET: Joi.string().min(32).required(),
-  JWT_REFRESH_SECRET: Joi.string().min(32).required(),
-  JWT_EXPIRES_IN: Joi.string().default('15m'),
-  JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+  JWT_EXPIRES_IN: Joi.string().default('30d'),
   CORS_ORIGINS: Joi.string().default(''),
 
   // OAuth providers

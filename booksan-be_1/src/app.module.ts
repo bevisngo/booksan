@@ -5,6 +5,7 @@ import { LoggerModule } from '@/core/logger/logger.module';
 import { ElasticsearchModule } from '@/core/elasticsearch';
 import { AuthModule } from '@/modules/auth';
 import { VenuesModule } from '@/modules/venues';
+import { CourtsModule } from '@/modules/courts';
 import { envSchema } from '@/config/schema.config';
 
 @Module({
@@ -18,6 +19,7 @@ import { envSchema } from '@/config/schema.config';
     ElasticsearchModule,
     AuthModule,
     VenuesModule,
+    CourtsModule,
   ],
   controllers: [],
   providers: [],

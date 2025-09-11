@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsArray, IsBoolean, IsUUID } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsArray,
+  IsBoolean,
+  IsUUID,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TemplateCategory } from '@prisma/client';
 
@@ -53,7 +59,9 @@ export class CreateFacilityProfileDto {
   @IsString()
   openGraphImage?: string;
 
-  @ApiPropertyOptional({ description: 'Whether this profile uses custom content' })
+  @ApiPropertyOptional({
+    description: 'Whether this profile uses custom content',
+  })
   @IsOptional()
   @IsBoolean()
   isCustomized?: boolean;
@@ -106,7 +114,9 @@ export class UpdateFacilityProfileDto {
   @IsString()
   openGraphImage?: string;
 
-  @ApiPropertyOptional({ description: 'Whether this profile uses custom content' })
+  @ApiPropertyOptional({
+    description: 'Whether this profile uses custom content',
+  })
   @IsOptional()
   @IsBoolean()
   isCustomized?: boolean;
@@ -140,7 +150,10 @@ export class CreateFacilityPageTemplateDto {
   @IsString()
   previewImage?: string;
 
-  @ApiPropertyOptional({ description: 'Template category', enum: TemplateCategory })
+  @ApiPropertyOptional({
+    description: 'Template category',
+    enum: TemplateCategory,
+  })
   @IsOptional()
   category?: TemplateCategory;
 
@@ -198,7 +211,9 @@ export class GenerateSlugDto {
   @IsString()
   name: string;
 
-  @ApiPropertyOptional({ description: 'Existing facility ID to ensure uniqueness' })
+  @ApiPropertyOptional({
+    description: 'Existing facility ID to ensure uniqueness',
+  })
   @IsOptional()
   @IsUUID()
   facilityId?: string;

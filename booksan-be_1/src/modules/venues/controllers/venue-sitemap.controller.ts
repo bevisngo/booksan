@@ -33,7 +33,7 @@ export class VenueSitemapController {
     });
 
     return venues.data.map(venue => ({
-      slug: venue.slug!,
+      slug: venue.slug,
       updatedAt: venue.updatedAt.toISOString(),
       isPublished: venue.isPublished,
     }));

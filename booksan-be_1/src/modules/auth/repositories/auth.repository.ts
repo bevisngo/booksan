@@ -44,11 +44,17 @@ export class AuthRepository extends BaseRepository<
     return this.findFirst({ phone });
   }
 
-  async findUserByEmailAndRole(email: string, role: UserRole): Promise<User | null> {
+  async findUserByEmailAndRole(
+    email: string,
+    role: UserRole,
+  ): Promise<User | null> {
     return this.findFirst({ email, role });
   }
 
-  async findUserByPhoneAndRole(phone: string, role: UserRole): Promise<User | null> {
+  async findUserByPhoneAndRole(
+    phone: string,
+    role: UserRole,
+  ): Promise<User | null> {
     return this.findFirst({ phone, role });
   }
 

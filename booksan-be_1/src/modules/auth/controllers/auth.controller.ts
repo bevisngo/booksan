@@ -13,16 +13,13 @@ import {
   OwnerLoginDto,
   OAuthCallbackDto,
   ZaloLoginDto,
-  RefreshTokenDto,
   AuthResponseDto,
-  RefreshResponseDto,
 } from '@/modules/auth/dto';
 import {
   SignupUseCase,
   LoginUseCase,
   OwnerLoginUseCase,
   OAuthLoginUseCase,
-  RefreshTokenUseCase,
   GetCurrentUserUseCase,
 } from '@/modules/auth/use-cases';
 import { OAuthService } from '@/modules/auth/services';
@@ -36,7 +33,6 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly ownerLoginUseCase: OwnerLoginUseCase,
     private readonly oauthLoginUseCase: OAuthLoginUseCase,
-    private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
     private readonly oauthService: OAuthService,
   ) {}
@@ -64,16 +60,6 @@ export class AuthController {
     @Body() dto: OwnerLoginDto,
   ): Promise<{ data: AuthResponseDto }> {
     const data = await this.ownerLoginUseCase.execute(dto);
-    return { data };
-  }
-
-  @Public()
-  @Post('refresh')
-  @HttpCode(HttpStatus.OK)
-  async refreshToken(
-    @Body() dto: RefreshTokenDto,
-  ): Promise<{ data: RefreshResponseDto }> {
-    const data = await this.refreshTokenUseCase.execute(dto);
     return { data };
   }
 

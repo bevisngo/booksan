@@ -65,8 +65,8 @@ export class OAuthLoginUseCase {
       user = foundUser;
     }
 
-    // Generate tokens
-    const { accessToken, refreshToken } = this.jwtService.generateTokens({
+    // Generate access token
+    const accessToken = this.jwtService.generateAccessToken({
       sub: user.id,
       email: user.email || '',
       role: user.role,
@@ -74,7 +74,6 @@ export class OAuthLoginUseCase {
 
     return {
       accessToken,
-      refreshToken,
       user: {
         id: user.id,
         fullname: user.fullname,

@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { FacilityProfile, FacilityPageTemplate, Facility } from '@prisma/client';
+import {
+  FacilityProfile,
+  FacilityPageTemplate,
+  Facility,
+} from '@prisma/client';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { BaseRepository } from '@/shared/repositories';
 
@@ -87,7 +91,9 @@ export class FacilityProfileRepository extends BaseRepository<
     super(prisma);
   }
 
-  async findByFacilityId(facilityId: string): Promise<FacilityProfileWithRelations | null> {
+  async findByFacilityId(
+    facilityId: string,
+  ): Promise<FacilityProfileWithRelations | null> {
     return this.prisma.facilityProfile.findUnique({
       where: { facilityId },
       include: {
@@ -97,7 +103,9 @@ export class FacilityProfileRepository extends BaseRepository<
     });
   }
 
-  async findByFacilitySlug(slug: string): Promise<FacilityProfileWithRelations | null> {
+  async findByFacilitySlug(
+    slug: string,
+  ): Promise<FacilityProfileWithRelations | null> {
     return this.prisma.facilityProfile.findFirst({
       where: {
         facility: {
@@ -143,7 +151,7 @@ export class FacilityProfileRepository extends BaseRepository<
         where: { facilityId },
         data,
       });
-    } catch (error) {
+    } catch {
       return null;
     }
   }

@@ -42,8 +42,8 @@ export class LoginUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generate tokens
-    const { accessToken, refreshToken } = this.jwtService.generateTokens({
+    // Generate access token
+    const accessToken = this.jwtService.generateAccessToken({
       sub: user.id,
       email: user.email || '',
       role: user.role,
@@ -51,7 +51,6 @@ export class LoginUseCase {
 
     return {
       accessToken,
-      refreshToken,
       user: {
         id: user.id,
         fullname: user.fullname,

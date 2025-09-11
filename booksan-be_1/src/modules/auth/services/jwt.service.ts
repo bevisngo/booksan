@@ -6,7 +6,6 @@ export interface JwtPayload {
   sub: string;
   email: string;
   role: string;
-  type: 'access' | 'refresh';
 }
 
 @Injectable()
@@ -16,45 +15,16 @@ export class JwtService {
     private readonly configService: ConfigService,
   ) {}
 
-  generateTokens(payload: Omit<JwtPayload, 'type'>) {
-    const accessToken = this.nestJwtService.sign(
-      { ...payload, type: 'access' },
-      {
-        secret: this.configService.get('JWT_SECRET'),
-        expiresIn: this.configService.get('JWT_EXPIRES_IN'),
-      },
-    );
-
-    const refreshToken = this.nestJwtService.sign(
-      { ...payload, type: 'refresh' },
-      {
-        secret: this.configService.get('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
-      },
-    );
-
-    return { accessToken, refreshToken };
+  generateAccessToken(payload: JwtPayload): string {
+    return this.nestJwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: this.configService.get('JWT_EXPIRES_IN'),
+    });
   }
 
   verifyAccessToken(token: string): JwtPayload {
     return this.nestJwtService.verify(token, {
       secret: this.configService.get('JWT_SECRET'),
     });
-  }
-
-  verifyRefreshToken(token: string): JwtPayload {
-    return this.nestJwtService.verify(token, {
-      secret: this.configService.get('JWT_REFRESH_SECRET'),
-    });
-  }
-
-  generateAccessToken(payload: Omit<JwtPayload, 'type'>): string {
-    return this.nestJwtService.sign(
-      { ...payload, type: 'access' },
-      {
-        secret: this.configService.get('JWT_SECRET'),
-        expiresIn: this.configService.get('JWT_EXPIRES_IN'),
-      },
-    );
   }
 }

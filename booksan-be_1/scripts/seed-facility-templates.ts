@@ -5,7 +5,8 @@ const prisma = new PrismaClient();
 const defaultTemplates = [
   {
     name: 'Modern Sports Center',
-    description: 'Clean and modern design perfect for sports centers and fitness facilities',
+    description:
+      'Clean and modern design perfect for sports centers and fitness facilities',
     category: TemplateCategory.MODERN,
     htmlTemplate: `
       <div class="facility-page modern-template">
@@ -150,7 +151,8 @@ const defaultTemplates = [
   },
   {
     name: 'Classic Tennis Club',
-    description: 'Traditional and elegant design for tennis clubs and country clubs',
+    description:
+      'Traditional and elegant design for tennis clubs and country clubs',
     category: TemplateCategory.CLASSIC,
     htmlTemplate: `
       <div class="facility-page classic-template">
@@ -385,7 +387,8 @@ const defaultTemplates = [
   },
   {
     name: 'Sport Complex Pro',
-    description: 'Professional multi-sport facility template with booking integration',
+    description:
+      'Professional multi-sport facility template with booking integration',
     category: TemplateCategory.SPORT_SPECIFIC,
     htmlTemplate: `
       <div class="facility-page sport-complex-template">
@@ -672,7 +675,8 @@ const defaultTemplates = [
   },
   {
     name: 'Minimalist Venue',
-    description: 'Clean, minimal design focusing on content and user experience',
+    description:
+      'Clean, minimal design focusing on content and user experience',
     category: TemplateCategory.BASIC,
     htmlTemplate: `
       <div class="facility-page minimal-template">
@@ -906,12 +910,12 @@ const defaultTemplates = [
 
 async function seedFacilityTemplates() {
   console.log('🌱 Seeding facility page templates...');
-  
+
   try {
     // Clear existing templates
     await prisma.facilityPageTemplate.deleteMany();
     console.log('🗑️ Cleared existing templates');
-    
+
     // Create new templates
     for (const template of defaultTemplates) {
       const created = await prisma.facilityPageTemplate.create({
@@ -919,7 +923,7 @@ async function seedFacilityTemplates() {
       });
       console.log(`✅ Created template: ${created.name}`);
     }
-    
+
     console.log('🎉 Template seeding completed!');
   } catch (error) {
     console.error('❌ Error seeding templates:', error);

@@ -15,7 +15,6 @@ import {
   LoginUseCase,
   OwnerLoginUseCase,
   OAuthLoginUseCase,
-  RefreshTokenUseCase,
   GetCurrentUserUseCase,
 } from './use-cases';
 
@@ -53,7 +52,6 @@ import { PrismaModule } from '@/core/prisma/prisma.module';
     LoginUseCase,
     OwnerLoginUseCase,
     OAuthLoginUseCase,
-    RefreshTokenUseCase,
     GetCurrentUserUseCase,
 
     // Repositories

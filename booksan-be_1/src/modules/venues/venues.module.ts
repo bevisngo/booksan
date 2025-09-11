@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { 
+import {
   VenueSearchController,
   FacilityProfileController,
   FacilityPageController,
@@ -7,7 +7,7 @@ import {
   VenueSitemapController,
 } from './controllers';
 import { VenueSearchService, FacilityProfileService } from './services';
-import { 
+import {
   VenueRepository,
   FacilityProfileRepository,
   FacilityPageTemplateRepository,

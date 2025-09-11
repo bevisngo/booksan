@@ -122,21 +122,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const refreshToken = async (): Promise<boolean> => {
-    try {
-      const success = await authService.refreshAccessToken();
-      if (!success) {
-        setUser(null);
-        authService.clearStoredUser();
-      }
-      return success;
-    } catch (error) {
-      console.error("Token refresh failed:", error);
-      setUser(null);
-      authService.clearStoredUser();
-      return false;
-    }
-  };
 
   const getCurrentUser = async (): Promise<User | null> => {
     try {
@@ -221,7 +206,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     signup,
     logout,
-    refreshToken,
     getCurrentUser,
     getGoogleAuthUrl,
     handleGoogleCallback,

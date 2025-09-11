@@ -17,8 +17,21 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.enableCors({
-    origin: '*',
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:8082',
+      'http://localhost:5173',
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'Origin',
+      'X-Requested-With',
+    ],
   });
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
 
@@ -41,7 +54,7 @@ async function bootstrap() {
   // const doc = SwaggerModule.createDocument(app, cfg);
   // SwaggerModule.setup('/docs', app, doc);
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 8000;
   await app.listen(port);
   console.log(`Server is running on port ${port}`);
 }

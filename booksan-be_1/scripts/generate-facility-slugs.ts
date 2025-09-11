@@ -18,7 +18,7 @@ function generateSlug(name: string, id: string): string {
 
 async function generateSlugsForExistingFacilities() {
   console.log('🔄 Generating slugs for existing facilities...');
-  
+
   try {
     // Get all facilities without slugs
     const facilities = await prisma.facility.findMany({
@@ -38,7 +38,7 @@ async function generateSlugsForExistingFacilities() {
     // Generate and update slugs
     for (const facility of facilities) {
       const slug = generateSlug(facility.name, facility.id);
-      
+
       try {
         await prisma.facility.update({
           where: { id: facility.id },
