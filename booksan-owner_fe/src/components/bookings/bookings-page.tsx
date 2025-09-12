@@ -17,7 +17,7 @@ import {
 import { BookingCard } from '@/components/bookings/booking-card';
 import { CreateBookingDialog } from '@/components/bookings/create-booking-dialog';
 import { useBookings } from '@/hooks/use-bookings';
-import { useVenues } from '@/hooks/use-venues';
+import { useFacilities } from '@/hooks/use-facilities';
 import { BookingFilters, BOOKING_STATUSES } from '@/types/booking';
 import { debounce } from '@/lib/utils';
 import { bookingApi } from '@/lib/api/bookings';
@@ -39,7 +39,7 @@ export function BookingsPage() {
   const [isExporting, setIsExporting] = React.useState(false);
   
   const { bookings, loading, error, refetch } = useBookings(filters);
-  const { venues } = useVenues({ limit: 100 }); // Get all venues for filter
+  const { facilities } = useFacilities({ limit: 100 }); // Get all facilities for filter
 
   // Debounced search
   const debouncedSetSearch = React.useMemo(
@@ -176,7 +176,7 @@ export function BookingsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Courts</SelectItem>
-                {venues?.courts.map((court) => (
+                {facilities?.data.flatMap(facility => facility.courts || []).map((court) => (
                   <SelectItem key={court.id} value={court.id}>
                     {court.name}
                   </SelectItem>

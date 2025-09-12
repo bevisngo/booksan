@@ -32,8 +32,8 @@ interface DashboardLayoutProps {
 
 const navigation = [
   {
-    name: 'Venues',
-    href: '/venues',
+    name: 'Facilities',
+    href: '/facilities',
     icon: Building2,
   },
   {

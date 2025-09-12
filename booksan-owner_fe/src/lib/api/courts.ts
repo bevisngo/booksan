@@ -4,12 +4,12 @@ import type {
   CourtWithFacility,
   CreateCourtData,
   UpdateCourtData,
-  CourtFilters,
+  FacilityFilters,
   CourtStats,
 } from '@/types/court';
 
 export class CourtApi {
-  static async getCourts(facilityId: string, filters: CourtFilters = {}): Promise<Court[]> {
+  static async getCourts(facilityId: string, filters: FacilityFilters = {}): Promise<Court[]> {
     if (!facilityId) {
       throw new Error('facilityId is required to get courts');
     }

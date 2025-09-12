@@ -31,7 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { formatCurrency } from '@/lib/utils';
 import { bookingApi } from '@/lib/api/bookings';
-import { useVenues } from '@/hooks/use-venues';
+import { useFacilities } from '@/hooks/use-facilities';
 import type { CreateBookingData, PriceSimulation } from '@/types/booking';
 
 const bookingSchema = z.object({
@@ -66,7 +66,7 @@ export function CreateBookingDialog({
   const [priceSimulation, setPriceSimulation] = React.useState<PriceSimulation | null>(null);
   const [isSimulating, setIsSimulating] = React.useState(false);
 
-  const { venues } = useVenues({ limit: 100 });
+  const { facilities } = useFacilities({ limit: 100 });
 
   const {
     register,
@@ -89,12 +89,14 @@ export function CreateBookingDialog({
   const duration = watch('duration');
 
   // Get selected court info
-  const selectedCourt = venues?.courts.find(court => court.id === courtId);
+  const selectedCourt = facilities?.data
+    .flatMap(facility => facility.courts || [])
+    .find(court => court.id === courtId);
 
   // Duration options based on selected court's slot length
   const getDurationOptions = () => {
     if (!selectedCourt) return [30, 60, 90, 120];
-    const slotLength = selectedCourt.slotLength;
+    const slotLength = selectedCourt.slotMinutes;
     return Array.from({ length: 8 }, (_, i) => slotLength * (i + 1));
   };
 
@@ -177,7 +179,7 @@ export function CreateBookingDialog({
         <DialogHeader>
           <DialogTitle>Create New Booking</DialogTitle>
           <DialogDescription>
-            Create a new booking for your venue. Fill in the details below.
+            Create a new booking for your facility. Fill in the details below.
           </DialogDescription>
         </DialogHeader>
 
@@ -193,9 +195,14 @@ export function CreateBookingDialog({
                 <SelectValue placeholder="Select a court" />
               </SelectTrigger>
               <SelectContent>
-                {venues?.courts.map((court) => (
+                {facilities?.data.flatMap(facility => 
+                  (facility.courts || []).map(court => ({ 
+                    ...court, 
+                    facilityName: facility.name 
+                  }))
+                ).map((court) => (
                   <SelectItem key={court.id} value={court.id}>
-                    {court.name} ({court.sportType})
+                    {court.name} - {court.sport}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -306,7 +313,7 @@ export function CreateBookingDialog({
               </Select>
               {selectedCourt && (
                 <p className="text-xs text-muted-foreground">
-                  Court slot length: {selectedCourt.slotLength} minutes
+                  Court slot length: {selectedCourt.slotMinutes} minutes
                 </p>
               )}
               {errors.duration && (

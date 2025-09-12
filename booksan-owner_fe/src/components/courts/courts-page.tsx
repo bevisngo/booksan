@@ -16,7 +16,7 @@ import {
 import { CourtCard } from '@/components/courts/court-card';
 import { CreateCourtDialog } from '@/components/courts/create-court-dialog';
 import { useCourts, useCourtMutations } from '@/hooks/use-courts';
-import { CourtFilters, Sport, Surface } from '@/types/court';
+import { FacilityFilters, Sport, Surface } from '@/types/court';
 import { SPORT_DISPLAY_NAMES, SURFACE_DISPLAY_NAMES } from '@/types/court';
 import { debounce } from '@/lib/utils';
 import { toast } from '@/components/ui/use-toast';
@@ -26,7 +26,7 @@ interface CourtsPageProps {
 }
 
 export function CourtsPage({ facilityId }: CourtsPageProps) {
-  const [filters, setFilters] = React.useState<CourtFilters>({
+  const [filters, setFilters] = React.useState<FacilityFilters>({
     facilityId,
     isActive: true,
   });
@@ -34,7 +34,7 @@ export function CourtsPage({ facilityId }: CourtsPageProps) {
   const [showCreateDialog, setShowCreateDialog] = React.useState(false);
   const [editingCourt, setEditingCourt] = React.useState<any>(null);
   
-  const { courts, loading, error, refetch } = useCourts(filters);
+  const { courts, loading, error, refetch } = useCourts(facilityId || '', filters);
   const { 
     createCourt, 
     updateCourt, 
@@ -56,11 +56,11 @@ export function CourtsPage({ facilityId }: CourtsPageProps) {
     debouncedSetSearch(value);
   };
 
-  const handleFilterChange = (key: keyof CourtFilters, value: string) => {
+  const handleFilterChange = (key: keyof FacilityFilters, value: string) => {
     if (value === 'all') {
       setFilters(prev => {
         const newFilters = { ...prev };
-        delete newFilters[key as keyof CourtFilters];
+        delete newFilters[key as keyof FacilityFilters];
         return newFilters;
       });
     } else {
@@ -70,7 +70,7 @@ export function CourtsPage({ facilityId }: CourtsPageProps) {
 
   const handleCourtCreated = async (data: any) => {
     try {
-      await createCourt(data);
+      await createCourt(facilityId || '', data);
       setShowCreateDialog(false);
       refetch();
       toast({

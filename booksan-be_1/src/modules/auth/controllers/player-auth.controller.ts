@@ -28,7 +28,7 @@ import {
 } from '@/modules/auth/use-cases';
 import { OAuthService } from '@/modules/auth/services';
 import { Public, CurrentUser } from '@/modules/auth/decorators';
-import { UserProfile } from '@/modules/auth/repositories';
+import { UserProfile } from '@/repositories/auth.repository';
 
 @ApiTags('Player Auth')
 @Controller('player/auth')
@@ -94,7 +94,6 @@ export class PlayerAuthController {
   @ApiResponse({
     status: 200,
     description: 'Player profile retrieved successfully',
-    type: UserProfile,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth()

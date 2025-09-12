@@ -1,5 +1,5 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { AuthRepository, CreateUserData } from '@/modules/auth/repositories';
+import { AuthRepository, CreateUserData } from '@/repositories';
 import { HashService } from '@/modules/auth/services';
 import { PrismaService } from '@/core/prisma/prisma.service';
 

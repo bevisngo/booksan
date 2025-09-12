@@ -3,8 +3,8 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
-import { AuthRepository } from '@/modules/auth/repositories';
+import { User, UserRole } from '@prisma/client';
+import { AuthRepository, FacilityRepository } from '@/repositories';
 import { JwtService, HashService } from '@/modules/auth/services';
 import { OwnerLoginDto, AuthResponseDto } from '@/modules/auth/dto';
 
@@ -12,6 +12,7 @@ import { OwnerLoginDto, AuthResponseDto } from '@/modules/auth/dto';
 export class OwnerLoginUseCase {
   constructor(
     private readonly authRepository: AuthRepository,
+    private readonly facilityRepository: FacilityRepository,
     private readonly jwtService: JwtService,
     private readonly hashService: HashService,
   ) {}
@@ -23,7 +24,7 @@ export class OwnerLoginUseCase {
     }
 
     // Find user with OWNER role
-    let user;
+    let user: User | null = null;
     if (dto.email) {
       user = await this.authRepository.findUserByEmailAndRole(
         dto.email,
@@ -51,11 +52,16 @@ export class OwnerLoginUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Get owner's facilities
+    const facilities = await this.facilityRepository.findByOwnerId(user.id);
+    const facilityId = facilities.length > 0 ? facilities[0].id : null;
+
     // Generate access token
     const accessToken = this.jwtService.generateAccessToken({
       sub: user.id,
       email: user.email || '',
       role: user.role,
+      facilityId: facilityId || '',
     });
 
     return {

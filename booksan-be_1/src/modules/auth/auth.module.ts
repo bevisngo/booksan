@@ -4,7 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 
 // Controllers
-import { AuthController, PlayerAuthController, OwnerAuthController } from './controllers';
+import {
+  AuthController,
+  PlayerAuthController,
+  OwnerAuthController,
+} from './controllers';
 
 // Services
 import { JwtService, HashService, OAuthService } from './services';
@@ -18,18 +22,15 @@ import {
   GetCurrentUserUseCase,
 } from './use-cases';
 
-// Repositories
-import { AuthRepository } from './repositories';
-
 // Guards
 import { JwtAuthGuard, RolesGuard } from './guards';
 
-// Core modules
-import { PrismaModule } from '@/core/prisma/prisma.module';
+// Repositories Module
+import { RepositoriesModule } from '@/repositories';
 
 @Module({
   imports: [
-    PrismaModule,
+    RepositoriesModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -54,9 +55,6 @@ import { PrismaModule } from '@/core/prisma/prisma.module';
     OAuthLoginUseCase,
     GetCurrentUserUseCase,
 
-    // Repositories
-    AuthRepository,
-
     // Guards
     JwtAuthGuard,
     RolesGuard,
@@ -75,7 +73,6 @@ import { PrismaModule } from '@/core/prisma/prisma.module';
     JwtService,
     HashService,
     OAuthService,
-    AuthRepository,
     JwtAuthGuard,
     RolesGuard,
   ],

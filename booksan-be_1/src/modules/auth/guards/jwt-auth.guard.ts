@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { JwtService } from '@/modules/auth/services';
-import { AuthRepository } from '@/modules/auth/repositories';
+import { AuthRepository } from '@/repositories';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 // Define the request interface with user property

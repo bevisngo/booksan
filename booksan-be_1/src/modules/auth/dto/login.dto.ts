@@ -1,4 +1,5 @@
-import { IsEmail, IsString, MinLength, ValidateIf } from 'class-validator';
+import { IsEmail, IsString, MinLength, ValidateIf, IsOptional, IsEnum } from 'class-validator';
+import { UserRole } from '@prisma/client';
 
 export class LoginDto {
   @ValidateIf((o: LoginDto) => !o.phone)
@@ -13,4 +14,8 @@ export class LoginDto {
   @IsString()
   @MinLength(6)
   password: string;
+
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole;
 }

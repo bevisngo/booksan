@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CourtController, PlayerCourtController, OwnerCourtController } from './controllers';
 import { CourtService } from './services';
-import { CourtRepository } from './repositories';
 import {
   CreateCourtUseCase,
   UpdateCourtUseCase,
@@ -10,16 +9,15 @@ import {
   DeleteCourtUseCase,
   GetCourtStatsUseCase,
 } from './use-cases';
-import { VenuesModule } from '@/modules/venues';
-import { PrismaModule } from '@/core/prisma/prisma.module';
+import { FacilitiesModule } from '@/modules/facilities';
+import { RepositoriesModule } from '@/repositories';
 import { AuthModule } from '@/modules/auth';
 
 @Module({
-  imports: [VenuesModule, PrismaModule, AuthModule],
+  imports: [FacilitiesModule, RepositoriesModule, AuthModule],
   controllers: [CourtController, PlayerCourtController, OwnerCourtController],
   providers: [
     CourtService,
-    CourtRepository,
     CreateCourtUseCase,
     UpdateCourtUseCase,
     GetCourtByIdUseCase,
@@ -29,7 +27,6 @@ import { AuthModule } from '@/modules/auth';
   ],
   exports: [
     CourtService,
-    CourtRepository,
     CreateCourtUseCase,
     UpdateCourtUseCase,
     GetCourtByIdUseCase,

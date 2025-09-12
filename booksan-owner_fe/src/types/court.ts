@@ -70,7 +70,7 @@ export interface UpdateCourtData {
   isActive?: boolean;
 }
 
-export interface CourtFilters {
+export interface FacilityFilters {
   facilityId?: string;
   sport?: Sport;
   surface?: Surface;

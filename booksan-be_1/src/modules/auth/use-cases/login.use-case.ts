@@ -3,7 +3,7 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
-import { AuthRepository } from '@/modules/auth/repositories';
+import { AuthRepository } from '@/repositories';
 import { JwtService, HashService } from '@/modules/auth/services';
 import { LoginDto, AuthResponseDto } from '@/modules/auth/dto';
 

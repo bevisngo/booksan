@@ -3,8 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '@/core/prisma/prisma.module';
 import { LoggerModule } from '@/core/logger/logger.module';
 import { ElasticsearchModule } from '@/core/elasticsearch';
+import { RepositoriesModule } from '@/repositories';
 import { AuthModule } from '@/modules/auth';
-import { VenuesModule } from '@/modules/venues';
+import { FacilitiesModule } from '@/modules/facilities';
 import { CourtsModule } from '@/modules/courts';
 import { envSchema } from '@/config/schema.config';
 
@@ -17,8 +18,9 @@ import { envSchema } from '@/config/schema.config';
     PrismaModule,
     LoggerModule,
     ElasticsearchModule,
+    RepositoriesModule,
     AuthModule,
-    VenuesModule,
+    FacilitiesModule,
     CourtsModule,
   ],
   controllers: [],

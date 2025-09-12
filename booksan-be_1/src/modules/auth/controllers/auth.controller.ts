@@ -24,7 +24,7 @@ import {
 } from '@/modules/auth/use-cases';
 import { OAuthService } from '@/modules/auth/services';
 import { Public, CurrentUser } from '@/modules/auth/decorators';
-import { UserProfile } from '@/modules/auth/repositories';
+import { UserProfile } from '@/repositories/auth.repository';
 
 @Controller('auth')
 export class AuthController {

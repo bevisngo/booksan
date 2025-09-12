@@ -3,7 +3,7 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { AuthRepository } from '@/modules/auth/repositories';
+import { AuthRepository } from '@/repositories';
 import { JwtService, HashService } from '@/modules/auth/services';
 import { SignupDto, AuthResponseDto } from '@/modules/auth/dto';
 

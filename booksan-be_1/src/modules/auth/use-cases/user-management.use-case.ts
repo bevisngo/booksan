@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AuthRepository } from '@/modules/auth/repositories';
+import { AuthRepository } from '@/repositories';
 import { UserRole } from '@prisma/client';
 
 @Injectable()

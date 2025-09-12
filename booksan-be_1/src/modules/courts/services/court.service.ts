@@ -8,11 +8,13 @@ import {
 import { Court, Sport, Surface } from '@prisma/client';
 import {
   CourtRepository,
+  FacilityRepository,
+} from '@/repositories';
+import {
   CreateCourtData,
   UpdateCourtData,
   CourtFilters,
-} from '../repositories/court.repository';
-import { VenueRepository } from '@/modules/venues/repositories/venue.repository';
+} from '@/repositories/court.repository';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import {
   CreateCourtDto,
@@ -28,7 +30,7 @@ export class CourtService {
 
   constructor(
     private readonly courtRepository: CourtRepository,
-    private readonly venueRepository: VenueRepository,
+    private readonly facilityRepository: FacilityRepository,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -36,7 +38,7 @@ export class CourtService {
     this.logger.debug(`Creating court: ${createCourtDto.name}`);
 
     // Validate facility exists
-    const facility = await this.venueRepository.findById(
+    const facility = await this.facilityRepository.findById(
       createCourtDto.facilityId,
     );
     if (!facility) {
@@ -137,7 +139,7 @@ export class CourtService {
     this.logger.debug(`Getting courts for facility: ${facilityId}`);
 
     // Validate facility exists
-    const facility = await this.venueRepository.findById(facilityId);
+    const facility = await this.facilityRepository.findById(facilityId);
     if (!facility) {
       throw new NotFoundException('Facility not found');
     }

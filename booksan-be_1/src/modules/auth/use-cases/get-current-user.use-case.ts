@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AuthRepository, UserProfile } from '@/modules/auth/repositories';
+import { AuthRepository } from '@/repositories';
+import { UserProfile } from '@/repositories/auth.repository';
 
 @Injectable()
 export class GetCurrentUserUseCase {

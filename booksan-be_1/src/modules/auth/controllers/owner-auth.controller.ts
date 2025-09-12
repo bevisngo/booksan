@@ -28,7 +28,8 @@ import {
 } from '@/modules/auth/use-cases';
 import { OAuthService } from '@/modules/auth/services';
 import { Public, CurrentUser } from '@/modules/auth/decorators';
-import { OwnerProfile } from '@/modules/auth/repositories';
+import { OwnerProfile } from '@/repositories/auth.repository';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('Owner Auth')
 @Controller('owner/auth')
@@ -55,7 +56,7 @@ export class OwnerAuthController {
   async signup(@Body() dto: SignupDto): Promise<{ data: AuthResponseDto }> {
     const data = await this.signupUseCase.execute({
       ...dto,
-      role: 'OWNER',
+      role: UserRole.OWNER,
     });
     return { data };
   }
@@ -88,25 +89,18 @@ export class OwnerAuthController {
   }
 
   @Get('me')
-  @ApiOperation({ summary: 'Get current owner profile with facility info' })
-  @ApiResponse({
-    status: 200,
-    description: 'Owner profile retrieved successfully',
-    type: OwnerProfile,
-  })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth()
   async getCurrentUser(
     @CurrentUser() user: OwnerProfile,
   ): Promise<{ data: OwnerProfile }> {
     // Since we have facilityId in JWT, we can get owner with facility
     const data = await this.getCurrentUserUseCase.execute(user.id);
-    return { 
+    return {
       data: {
         ...data,
         facilityId: user.facilityId,
         facility: user.facility,
-      } as OwnerProfile 
+      } as OwnerProfile,
     };
   }
 

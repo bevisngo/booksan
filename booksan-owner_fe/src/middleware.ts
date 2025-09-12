@@ -4,9 +4,9 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Only handle root redirect to venues - let client-side auth handle the rest
+  // Only handle root redirect to facilities - let client-side auth handle the rest
   if (pathname === '/') {
-    return NextResponse.redirect(new URL('/venues', request.url));
+    return NextResponse.redirect(new URL('/facilities', request.url));
   }
   
   return NextResponse.next();

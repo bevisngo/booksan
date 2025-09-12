@@ -1,6 +1,6 @@
 import { CurrentUser, Roles } from '@/modules/auth/decorators';
 import { JwtAuthGuard, RolesGuard } from '@/modules/auth/guards';
-import { OwnerProfile } from '@/modules/auth/repositories';
+import { OwnerProfile } from '@/repositories/auth.repository';
 import {
   Body,
   Controller,

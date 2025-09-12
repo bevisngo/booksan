@@ -1,5 +1,4 @@
-export * from './courts.module';
+export * from './facilities.module';
 export * from './controllers';
 export * from './services';
-export * from './use-cases';
 export * from './dto';

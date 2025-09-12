@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Booksan Owner',
-  description: 'Manage your sports venues and bookings',
+  description: 'Manage your sports facilities and bookings',
 };
 
 export default function RootLayout({

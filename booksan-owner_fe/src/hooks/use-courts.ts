@@ -3,29 +3,31 @@
 import * as React from 'react';
 import { courtApi } from '@/lib/api/courts';
 import type {
-  CourtFilters,
+  FacilityFilters,
   Court,
   CourtWithFacility,
   CourtStats,
 } from '@/types/court';
 
-export function useCourts(filters: CourtFilters = {}) {
+export function useCourts(facilityId: string, filters: FacilityFilters = {}) {
   const [courts, setCourts] = React.useState<Court[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | null>(null);
 
   const fetchCourts = React.useCallback(async () => {
+    if (!facilityId) return;
+    
     try {
       setLoading(true);
       setError(null);
-      const result = await courtApi.getCourts(filters);
+      const result = await courtApi.getCourts(facilityId, filters);
       setCourts(result);
     } catch (err) {
       setError(err as Error);
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [facilityId, filters]);
 
   React.useEffect(() => {
     fetchCourts();
@@ -109,6 +111,8 @@ export function useCourtStats(facilityId?: string) {
   const [error, setError] = React.useState<Error | null>(null);
 
   const fetchStats = React.useCallback(async () => {
+    if (!facilityId) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -137,11 +141,11 @@ export function useCourtMutations() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
 
-  const createCourt = React.useCallback(async (data: any) => {
+  const createCourt = React.useCallback(async (facilityId: string, data: any) => {
     try {
       setLoading(true);
       setError(null);
-      const result = await courtApi.createCourt(data);
+      const result = await courtApi.createCourt(facilityId, data);
       return result;
     } catch (err) {
       setError(err as Error);
