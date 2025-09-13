@@ -47,6 +47,7 @@ export class LoginUseCase {
       sub: user.id,
       email: user.email || '',
       role: user.role,
+      phone: user.phone,
     });
 
     return {

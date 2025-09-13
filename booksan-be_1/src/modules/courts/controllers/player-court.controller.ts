@@ -1,12 +1,5 @@
 import { Public } from '@/modules/auth/decorators';
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { Sport, Surface } from '@prisma/client';
 import {
   CourtResponseDto,
@@ -15,7 +8,6 @@ import {
 import { CourtService } from '../services/court.service';
 import { GetCourtByIdUseCase, GetCourtsByFacilityUseCase } from '../use-cases';
 
-@ApiTags('Player Courts')
 @Controller('player/courts')
 @Public() // Players can view courts without authentication
 export class PlayerCourtController {
@@ -26,32 +18,6 @@ export class PlayerCourtController {
   ) {}
 
   @Get('facility/:facilityId')
-  @ApiOperation({ summary: 'Get all courts for a facility (Player view)' })
-  @ApiParam({ name: 'facilityId', description: 'Facility ID' })
-  @ApiQuery({
-    name: 'sport',
-    required: false,
-    enum: Sport,
-    description: 'Filter by sport type',
-  })
-  @ApiQuery({
-    name: 'surface',
-    required: false,
-    enum: Surface,
-    description: 'Filter by surface type',
-  })
-  @ApiQuery({
-    name: 'indoor',
-    required: false,
-    type: Boolean,
-    description: 'Filter by indoor/outdoor',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Courts retrieved successfully',
-    type: [CourtResponseDto],
-  })
-  @ApiResponse({ status: 404, description: 'Facility not found' })
   async getCourtsByFacility(
     @Param('facilityId', ParseUUIDPipe) facilityId: string,
     @Query('sport') sport?: Sport,
@@ -73,14 +39,6 @@ export class PlayerCourtController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get court by ID (Player view)' })
-  @ApiParam({ name: 'id', description: 'Court ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Court retrieved successfully',
-    type: CourtWithFacilityResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Court not found' })
   async getCourtById(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CourtWithFacilityResponseDto> {
@@ -95,14 +53,6 @@ export class PlayerCourtController {
   }
 
   @Get('facility/:facilityId/sport/:sport')
-  @ApiOperation({ summary: 'Get courts by facility and sport (Player view)' })
-  @ApiParam({ name: 'facilityId', description: 'Facility ID' })
-  @ApiParam({ name: 'sport', enum: Sport, description: 'Sport type' })
-  @ApiResponse({
-    status: 200,
-    description: 'Courts retrieved successfully',
-    type: [CourtResponseDto],
-  })
   async getCourtsByFacilityAndSport(
     @Param('facilityId', ParseUUIDPipe) facilityId: string,
     @Param('sport') sport: Sport,
@@ -114,25 +64,6 @@ export class PlayerCourtController {
   }
 
   @Get('facility/:facilityId/available')
-  @ApiOperation({ summary: 'Get available courts for booking (Player view)' })
-  @ApiParam({ name: 'facilityId', description: 'Facility ID' })
-  @ApiQuery({
-    name: 'date',
-    required: true,
-    type: String,
-    description: 'Date for availability check (YYYY-MM-DD)',
-  })
-  @ApiQuery({
-    name: 'sport',
-    required: false,
-    enum: Sport,
-    description: 'Filter by sport type',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Available courts retrieved successfully',
-    type: [CourtResponseDto],
-  })
   async getAvailableCourts(
     @Param('facilityId', ParseUUIDPipe) facilityId: string,
     @Query('date') date: string,

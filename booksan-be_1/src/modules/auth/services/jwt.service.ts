@@ -4,9 +4,10 @@ import { JwtService as NestJwtService } from '@nestjs/jwt';
 
 export interface JwtPayload {
   sub: string;
-  email: string;
+  email?: string;
   role: string;
   facilityId?: string; // Optional - only for owners
+  phone?: string;
 }
 
 export interface PlayerJwtPayload extends JwtPayload {

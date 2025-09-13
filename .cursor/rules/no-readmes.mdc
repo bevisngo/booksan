@@ -1,0 +1,17 @@
+---
+description: Never generate README files unless explicitly requested
+globs: [”**/*”]
+alwaysApply: true
+---
+
+Policy: No README Generation
+
+You must not create or modify any README files (e.g., README.md, README, README.txt) or auto-generate documentation files unless I explicitly ask for it in the current prompt.
+
+What to do instead
+	•	If you feel documentation is needed, add concise inline code comments or JSDoc near the code being changed.
+	•	If I explicitly request documentation, ask where to put it (e.g., /docs/), and keep it minimal and task-scoped.
+
+Enforcement Checklist (run before proposing changes)
+	•	Are you about to create or edit README* or docs/*.md? → Stop and skip.
+	•	Limit any “documentation” to inline comments or test descriptions unless I asked otherwise.

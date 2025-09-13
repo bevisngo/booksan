@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CourtController, PlayerCourtController, OwnerCourtController } from './controllers';
+import {
+  CourtController,
+  PlayerCourtController,
+  OwnerCourtController,
+} from './controllers';
 import { CourtService } from './services';
 import {
   CreateCourtUseCase,
@@ -8,6 +12,7 @@ import {
   GetCourtsByFacilityUseCase,
   DeleteCourtUseCase,
   GetCourtStatsUseCase,
+  GetAllCourtsUseCase,
 } from './use-cases';
 import { FacilitiesModule } from '@/modules/facilities';
 import { RepositoriesModule } from '@/repositories';
@@ -24,6 +29,7 @@ import { AuthModule } from '@/modules/auth';
     GetCourtsByFacilityUseCase,
     DeleteCourtUseCase,
     GetCourtStatsUseCase,
+    GetAllCourtsUseCase,
   ],
   exports: [
     CourtService,
@@ -33,6 +39,7 @@ import { AuthModule } from '@/modules/auth';
     GetCourtsByFacilityUseCase,
     DeleteCourtUseCase,
     GetCourtStatsUseCase,
+    GetAllCourtsUseCase,
   ],
 })
 export class CourtsModule {}

@@ -6,10 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Court, Sport, Surface } from '@prisma/client';
-import {
-  CourtRepository,
-  FacilityRepository,
-} from '@/repositories';
+import { CourtRepository, FacilityRepository } from '@/repositories';
 import {
   CreateCourtData,
   UpdateCourtData,
@@ -22,7 +19,9 @@ import {
   CourtResponseDto,
   CourtWithFacilityResponseDto,
   CourtFiltersDto,
+  CourtPaginationResponseDto,
 } from '../dto/court.dto';
+import { FilterToPrismaUtil } from '@/common/utils';
 
 @Injectable()
 export class CourtService {
@@ -166,6 +165,58 @@ export class CourtService {
     });
 
     return result.data.map(court => this.mapCourtToResponseDto(court));
+  }
+
+  async getAllCourtsPaginated(
+    filters: CourtFiltersDto,
+  ): Promise<CourtPaginationResponseDto> {
+    this.logger.debug(
+      'Getting all courts with pagination and filters',
+      filters,
+    );
+
+    // Build base where clause from filters
+    const whereClause: Record<string, any> = {};
+
+    if (filters.facilityId) whereClause.facilityId = filters.facilityId;
+    if (filters.sport) whereClause.sport = filters.sport;
+    if (filters.surface) whereClause.surface = filters.surface;
+    if (filters.indoor !== undefined) whereClause.indoor = filters.indoor;
+    if (filters.isActive !== undefined) whereClause.isActive = filters.isActive;
+
+    // Handle search functionality
+    if (filters.search && filters.search.trim()) {
+      const searchFields = ['name'];
+      const searchClause = FilterToPrismaUtil.buildSearchClause(
+        filters.search,
+        searchFields,
+      );
+      if (searchClause.length > 0) {
+        // Merge search with existing filters using AND
+        whereClause.AND = [
+          searchClause.length === 1 ? searchClause[0] : { OR: searchClause },
+        ];
+      }
+    }
+
+    // Convert to repository options
+    const repositoryOptions = FilterToPrismaUtil.toRepositoryOptions(
+      filters,
+      whereClause,
+      filters.includeRelations ? { facility: true } : undefined,
+    );
+
+    // Set default sort field if not provided
+    if (!filters.sortBy) {
+      repositoryOptions.orderBy = { name: 'asc' };
+    }
+
+    const result = await this.courtRepository.findMany(repositoryOptions);
+
+    return new CourtPaginationResponseDto(
+      result.data.map(court => this.mapCourtToResponseDto(court)),
+      result.meta,
+    );
   }
 
   async getCourtsBySport(sport: Sport): Promise<CourtResponseDto[]> {

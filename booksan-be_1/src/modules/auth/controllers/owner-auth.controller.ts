@@ -8,12 +8,6 @@ import {
   Query,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import {
   SignupDto,
   OwnerLoginDto,
   OAuthCallbackDto,
@@ -31,7 +25,6 @@ import { Public, CurrentUser } from '@/modules/auth/decorators';
 import { OwnerProfile } from '@/repositories/auth.repository';
 import { UserRole } from '@prisma/client';
 
-@ApiTags('Owner Auth')
 @Controller('owner/auth')
 export class OwnerAuthController {
   constructor(
@@ -45,14 +38,6 @@ export class OwnerAuthController {
   @Public()
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Owner signup' })
-  @ApiResponse({
-    status: 201,
-    description: 'Owner registered successfully',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 409, description: 'Email or phone already exists' })
   async signup(@Body() dto: SignupDto): Promise<{ data: AuthResponseDto }> {
     const data = await this.signupUseCase.execute({
       ...dto,
@@ -64,14 +49,6 @@ export class OwnerAuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Owner login' })
-  @ApiResponse({
-    status: 200,
-    description: 'Owner logged in successfully',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  @ApiResponse({ status: 404, description: 'Owner facility not found' })
   async login(@Body() dto: OwnerLoginDto): Promise<{ data: AuthResponseDto }> {
     const data = await this.ownerLoginUseCase.execute(dto);
     return { data };
@@ -79,9 +56,6 @@ export class OwnerAuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Owner logout' })
-  @ApiResponse({ status: 204, description: 'Owner logged out successfully' })
-  @ApiBearerAuth()
   logout(): Promise<void> {
     // In a real implementation, you might want to blacklist the token
     // For now, we just return success since JWT tokens are stateless
@@ -89,7 +63,6 @@ export class OwnerAuthController {
   }
 
   @Get('me')
-  @ApiBearerAuth()
   async getCurrentUser(
     @CurrentUser() user: OwnerProfile,
   ): Promise<{ data: OwnerProfile }> {
@@ -107,11 +80,6 @@ export class OwnerAuthController {
   // OAuth endpoints for owners
   @Public()
   @Get('google')
-  @ApiOperation({ summary: 'Get Google OAuth URL for owners' })
-  @ApiResponse({
-    status: 200,
-    description: 'Google OAuth URL retrieved successfully',
-  })
   getGoogleAuthUrl(): { data: { url: string } } {
     const url = this.oauthService.getGoogleAuthUrl();
     return { data: { url } };
@@ -119,13 +87,6 @@ export class OwnerAuthController {
 
   @Public()
   @Get('google/callback')
-  @ApiOperation({ summary: 'Handle Google OAuth callback for owners' })
-  @ApiResponse({
-    status: 200,
-    description: 'Google OAuth login successful',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Invalid OAuth callback' })
   async googleCallback(
     @Query() dto: OAuthCallbackDto,
   ): Promise<{ data: AuthResponseDto }> {
@@ -135,11 +96,6 @@ export class OwnerAuthController {
 
   @Public()
   @Get('facebook')
-  @ApiOperation({ summary: 'Get Facebook OAuth URL for owners' })
-  @ApiResponse({
-    status: 200,
-    description: 'Facebook OAuth URL retrieved successfully',
-  })
   getFacebookAuthUrl(): { data: { url: string } } {
     const url = this.oauthService.getFacebookAuthUrl();
     return { data: { url } };
@@ -147,13 +103,6 @@ export class OwnerAuthController {
 
   @Public()
   @Get('facebook/callback')
-  @ApiOperation({ summary: 'Handle Facebook OAuth callback for owners' })
-  @ApiResponse({
-    status: 200,
-    description: 'Facebook OAuth login successful',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Invalid OAuth callback' })
   async facebookCallback(
     @Query() dto: OAuthCallbackDto,
   ): Promise<{ data: AuthResponseDto }> {
@@ -163,11 +112,6 @@ export class OwnerAuthController {
 
   @Public()
   @Get('zalo')
-  @ApiOperation({ summary: 'Get Zalo OAuth URL for owners' })
-  @ApiResponse({
-    status: 200,
-    description: 'Zalo OAuth URL retrieved successfully',
-  })
   getZaloAuthUrl(): { data: { url: string } } {
     const url = this.oauthService.getZaloAuthUrl();
     return { data: { url } };
@@ -176,13 +120,6 @@ export class OwnerAuthController {
   @Public()
   @Post('zalo/login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login with Zalo for owners' })
-  @ApiResponse({
-    status: 200,
-    description: 'Zalo login successful',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Invalid Zalo access token' })
   async zaloLogin(
     @Body() dto: ZaloLoginDto,
   ): Promise<{ data: AuthResponseDto }> {

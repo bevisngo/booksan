@@ -1,0 +1,47 @@
+---
+description: NestJS backend rules: do not use Swagger; use validation, tests, and clear types instead
+globs: ["/*.ts", "/package.json", "**/nest-cli.json"]
+alwaysApply: true
+---
+
+NestJS Rules: No Swagger
+
+For this project, do not use Swagger/OpenAPI tooling in any form. This includes:
+	•	Not installing or referencing @nestjs/swagger
+	•	Not calling SwaggerModule or adding Swagger bootstrap code in main.ts
+	•	Not adding Swagger decorators (e.g., @ApiProperty, @ApiTags, @ApiOperation, etc.)
+
+If existing code includes Swagger:
+	•	Do not extend it. Prefer removing or isolating it if you must touch related areas, but only when the current task requires it.
+
+Preferred Practices (instead of Swagger)
+	1.	DTOs + Validation
+	•	Use class-validator and class-transformer in DTOs.
+	•	Keep DTOs close to their modules (e.g., src/users/dto/).
+	•	Ensure ValidationPipe with { whitelist: true, transform: true } in main.ts.
+	2.	Types & Contracts
+	•	Rely on TypeScript types and DTO classes as the single source of truth for request/response shapes.
+	•	Export shared interfaces/types from a common package or src/shared/ when reused.
+	3.	Tests as Living Docs
+	•	Add e2e tests that clearly exercise each route’s request/response shapes.
+	•	Prefer integration/e2e tests over generating static API docs.
+	4.	Inline Comments
+	•	Add concise comments above controllers/handlers describing important edge cases, status codes, and constraints.
+
+    Code Generation & Scaffolding Guidelines
+	•	When scaffolding new modules/controllers:
+	•	Include DTOs with class-validator rules.
+	•	Add @UsePipes(new ValidationPipe({ whitelist: true, transform: true })) globally (in main.ts) if not already present.
+	•	Provide minimal e2e tests (e.g., apps/api/test/<feature>.e2e-spec.ts) that assert request validation and response shapes.
+
+Dependency Policy
+	•	Allowed: @nestjs/*, class-validator, class-transformer, testing libs (Jest or Vitest), supertest for e2e.
+	•	Disallowed: @nestjs/swagger, swagger-ui-express, any OpenAPI/Swagger codegen or decorators.
+
+Enforcement Checklist (run before proposing changes)
+	•	You are not adding @nestjs/swagger or Swagger code to main.ts or any controller.
+	•	All routes have DTOs with validation where appropriate.
+	•	Tests cover the “shape” of inputs/outputs instead of relying on generated docs.
+	•	Any urge to “document the API” defaults to tests and comments, not Swagger.
+
+⸻

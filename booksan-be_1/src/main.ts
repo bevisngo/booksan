@@ -9,7 +9,6 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
-// import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -44,13 +43,6 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  // const cfg = new DocumentBuilder()
-  //   .setTitle('Booksan API')
-  //   .setVersion('1.0')
-  //   .addBearerAuth()
-  //   .build();
-  // const doc = SwaggerModule.createDocument(app, cfg);
-  // SwaggerModule.setup('/docs', app, doc);
 
   const port = process.env.PORT || 8000;
   await app.listen(port);

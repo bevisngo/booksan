@@ -62,6 +62,7 @@ export class OwnerLoginUseCase {
       email: user.email || '',
       role: user.role,
       facilityId: facilityId || '',
+      phone: user.phone || '',
     });
 
     return {

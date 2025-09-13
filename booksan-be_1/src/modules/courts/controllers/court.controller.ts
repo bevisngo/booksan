@@ -13,22 +13,18 @@ import {
   Put,
   Query,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 import {
   CourtResponseDto,
   CourtWithFacilityResponseDto,
   CreateCourtDto,
+  CourtFiltersDto,
   UpdateCourtDto,
+  CourtPaginationResponseDto,
 } from '../dto/court.dto';
+import { PaginationPipe } from '@/common/pipes';
 import { CourtService } from '../services/court.service';
 import {
   CreateCourtUseCase,
@@ -37,12 +33,23 @@ import {
   GetCourtsByFacilityUseCase,
   GetCourtStatsUseCase,
   UpdateCourtUseCase,
+  GetAllCourtsUseCase,
 } from '../use-cases';
+import { CurrentUser } from '@/modules/auth/decorators';
+import { OwnerProfile } from '@/repositories/auth.repository';
 
-@ApiTags('Courts')
+/**
+ * CourtController handles all public and owner/admin court routes.
+ * All endpoints require authentication.
+ * Pagination, filtering, and sorting are handled via CourtFiltersDto and PaginationPipe.
+ *
+ * Edge cases and constraints:
+ * - Only OWNER/ADMIN can create, update, delete, activate, or deactivate courts.
+ * - All input DTOs are validated.
+ * - All responses are typed via DTOs.
+ */
 @Controller('courts')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class CourtController {
   constructor(
     private readonly courtService: CourtService,
@@ -52,45 +59,40 @@ export class CourtController {
     private readonly getCourtsByFacilityUseCase: GetCourtsByFacilityUseCase,
     private readonly deleteCourtUseCase: DeleteCourtUseCase,
     private readonly getCourtStatsUseCase: GetCourtStatsUseCase,
+    private readonly getAllCourtsUseCase: GetAllCourtsUseCase,
   ) {}
 
+  /**
+   * Get a paginated list of courts.
+   * Supports filtering, sorting, and search via query params.
+   */
+  @Get()
+  @UsePipes(new PaginationPipe(CourtFiltersDto))
+  async getCourts(
+    @CurrentUser() user: OwnerProfile,
+    @Query() filters: CourtFiltersDto,
+  ): Promise<CourtPaginationResponseDto> {
+    return this.getAllCourtsUseCase.execute(filters);
+  }
+
+  /**
+   * Create a new court (OWNER/ADMIN only).
+   */
   @Post()
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @ApiOperation({ summary: 'Create a new court' })
-  @ApiResponse({
-    status: 201,
-    description: 'Court created successfully',
-    type: CourtResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Invalid input data' })
-  @ApiResponse({ status: 404, description: 'Facility not found' })
-  @ApiResponse({
-    status: 409,
-    description: 'Court name already exists in facility',
-  })
   async createCourt(
     @Body() createCourtDto: CreateCourtDto,
   ): Promise<CourtResponseDto> {
     return this.createCourtUseCase.execute(createCourtDto);
   }
 
+  /**
+   * Update a court by ID (OWNER/ADMIN only).
+   */
   @Put(':id')
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @ApiOperation({ summary: 'Update a court' })
-  @ApiParam({ name: 'id', description: 'Court ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Court updated successfully',
-    type: CourtResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Invalid input data' })
-  @ApiResponse({ status: 404, description: 'Court not found' })
-  @ApiResponse({
-    status: 409,
-    description: 'Court name already exists in facility',
-  })
   async updateCourt(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCourtDto: UpdateCourtDto,
@@ -98,97 +100,66 @@ export class CourtController {
     return this.updateCourtUseCase.execute(id, updateCourtDto);
   }
 
+  /**
+   * Get a court by ID.
+   */
   @Get(':id')
-  @ApiOperation({ summary: 'Get court by ID' })
-  @ApiParam({ name: 'id', description: 'Court ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Court retrieved successfully',
-    type: CourtWithFacilityResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Court not found' })
   async getCourtById(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CourtWithFacilityResponseDto> {
     return this.getCourtByIdUseCase.execute(id);
   }
 
+  /**
+   * Get all courts for a specific facility.
+   */
   @Get('facility/:facilityId')
-  @ApiOperation({ summary: 'Get all courts for a facility' })
-  @ApiParam({ name: 'facilityId', description: 'Facility ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Courts retrieved successfully',
-    type: [CourtResponseDto],
-  })
-  @ApiResponse({ status: 404, description: 'Facility not found' })
   async getCourtsByFacility(
     @Param('facilityId', ParseUUIDPipe) facilityId: string,
   ): Promise<CourtResponseDto[]> {
     return this.getCourtsByFacilityUseCase.execute(facilityId);
   }
 
+  /**
+   * Delete a court by ID (OWNER/ADMIN only).
+   */
   @Delete(':id')
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete a court' })
-  @ApiParam({ name: 'id', description: 'Court ID' })
-  @ApiResponse({ status: 204, description: 'Court deleted successfully' })
-  @ApiResponse({
-    status: 400,
-    description: 'Cannot delete court with existing bookings',
-  })
-  @ApiResponse({ status: 404, description: 'Court not found' })
   async deleteCourt(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.deleteCourtUseCase.execute(id);
   }
 
+  /**
+   * Deactivate a court by ID (OWNER/ADMIN only).
+   */
   @Put(':id/deactivate')
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @ApiOperation({ summary: 'Deactivate a court' })
-  @ApiParam({ name: 'id', description: 'Court ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Court deactivated successfully',
-    type: CourtResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Court not found' })
   async deactivateCourt(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CourtResponseDto> {
     return this.courtService.deactivateCourt(id);
   }
 
+  /**
+   * Activate a court by ID (OWNER/ADMIN only).
+   */
   @Put(':id/activate')
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @ApiOperation({ summary: 'Activate a court' })
-  @ApiParam({ name: 'id', description: 'Court ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Court activated successfully',
-    type: CourtResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Court not found' })
   async activateCourt(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CourtResponseDto> {
     return this.courtService.activateCourt(id);
   }
 
+  /**
+   * Get court statistics overview.
+   * Returns total, active, inactive, bySport, bySurface, indoor, and outdoor counts.
+   */
   @Get('stats/overview')
-  @ApiOperation({ summary: 'Get court statistics' })
-  @ApiQuery({
-    name: 'facilityId',
-    required: false,
-    description: 'Filter stats by facility ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Court statistics retrieved successfully',
-  })
   async getCourtStats(@Query('facilityId') facilityId?: string): Promise<{
     total: number;
     active: number;

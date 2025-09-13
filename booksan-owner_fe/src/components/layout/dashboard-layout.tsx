@@ -32,14 +32,9 @@ interface DashboardLayoutProps {
 
 const navigation = [
   {
-    name: 'Facilities',
-    href: '/facilities',
-    icon: Building2,
-  },
-  {
     name: 'Courts',
     href: '/courts',
-    icon: MapPin,
+    icon: Building2,
   },
   {
     name: 'Bookings',
@@ -69,7 +64,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
               </h1>
             </div>
             <nav className="mt-8 flex-1 px-2 space-y-1">
-              {navigation.map((item) => {
+              {navigation.map(item => {
                 const isActive = pathname === item.href;
                 return (
                   <Link
@@ -121,7 +116,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                 </h1>
               </div>
               <nav className="mt-8 flex-1 px-2 space-y-1">
-                {navigation.map((item) => {
+                {navigation.map(item => {
                   const isActive = pathname === item.href;
                   return (
                     <Link
@@ -157,13 +152,15 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
       <div className="flex flex-col flex-1 md:pl-64">
         {/* Top navigation */}
         <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-background border-b border-border">
-
           <div className="flex-1 px-4 flex justify-between items-center">
             <div className="flex-1" />
             <div className="ml-4 flex items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center space-x-2"
+                  >
                     <User className="h-5 w-5" />
                     <span className="hidden sm:block">{user.fullname}</span>
                   </Button>

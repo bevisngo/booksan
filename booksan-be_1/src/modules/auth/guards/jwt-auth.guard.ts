@@ -14,10 +14,10 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
-    fullname: string;
     email: string | null;
-    phone?: string | null;
-    role: string;
+    phone: string | null;
+    role: string | null;
+    facilityId?: string | null;
   };
 }
 
@@ -29,7 +29,7 @@ export class JwtAuthGuard implements CanActivate {
     private readonly reflector: Reflector,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     // Check if route is marked as public
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
@@ -51,15 +51,27 @@ export class JwtAuthGuard implements CanActivate {
       const payload = this.jwtService.verifyAccessToken(token);
 
       // Verify user still exists
-      const user = await this.authRepository.findUserById(payload.sub);
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
+      // const user = await this.authRepository.findUserById(payload.sub);
+      // if (!user) {
+      //   throw new UnauthorizedException('User not found');
+      // }
 
       // Attach user to request
-      request.user = user;
+
+      if (!payload.sub || !payload.role) {
+        throw new UnauthorizedException('Invalid access token');
+      }
+
+      request.user = {
+        id: payload.sub,
+        email: payload.email || null,
+        phone: payload.phone || null,
+        role: payload.role || null,
+        facilityId: payload.facilityId || null,
+      };
       return true;
-    } catch {
+    } catch (error) {
+      console.error(error);
       throw new UnauthorizedException('Invalid access token');
     }
   }
