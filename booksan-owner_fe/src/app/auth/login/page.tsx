@@ -65,7 +65,7 @@ export default function LoginPage() {
         description: 'Welcome back!',
       });
       
-      router.push('/facilities');
+      router.push('/courts');
     } catch (error: any) {
       toast({
         variant: 'destructive',

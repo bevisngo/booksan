@@ -1,5 +1,5 @@
 import { Public, Roles } from '@/modules/auth/decorators';
-import { JwtAuthGuard, RolesGuard } from '@/modules/auth/guards';
+import { JwtAuthGuard, RolesGuard, OwnerRoleGuard } from '@/modules/auth/guards';
 import {
   Body,
   Controller,
@@ -25,22 +25,18 @@ import {
 import { FacilityProfileService } from '../services/facility-profile.service';
 
 @Controller('facility-profiles')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, OwnerRoleGuard)
 export class FacilityProfileController {
   constructor(
     private readonly facilityProfileService: FacilityProfileService,
   ) {}
 
   @Post()
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
   async createProfile(@Body() createProfileDto: CreateFacilityProfileDto) {
     return this.facilityProfileService.createProfile(createProfileDto);
   }
 
   @Put(':facilityId')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
   async updateProfile(
     @Param('facilityId', ParseUUIDPipe) facilityId: string,
     @Body() updateProfileDto: UpdateFacilityProfileDto,
@@ -57,16 +53,12 @@ export class FacilityProfileController {
   }
 
   @Delete(':facilityId')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteProfile(@Param('facilityId', ParseUUIDPipe) facilityId: string) {
     return this.facilityProfileService.deleteProfile(facilityId);
   }
 
   @Post('generate-slug')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
   async generateSlug(@Body() generateSlugDto: GenerateSlugDto) {
     const slug = await this.facilityProfileService.generateSlug(
       generateSlugDto.name,
@@ -116,7 +108,7 @@ export class FacilityPageController {
 }
 
 @Controller('facility-templates')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, OwnerRoleGuard)
 export class FacilityTemplateController {
   constructor(
     private readonly facilityProfileService: FacilityProfileService,

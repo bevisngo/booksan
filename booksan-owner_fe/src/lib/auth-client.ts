@@ -53,7 +53,7 @@ export class AuthServiceClient {
 
   async getCurrentUser() {
     try {
-      const response = await fetch(`${this.baseUrl}/auth/me`, {
+      const response = await fetch(`${this.baseUrl}/owner/auth/me`, {
         method: 'GET',
         credentials: 'include',
         headers: {

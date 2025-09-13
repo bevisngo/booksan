@@ -40,7 +40,7 @@ const courtSchema = z.object({
   facilityId: z.string().min(1, 'Facility is required'),
   name: z.string().min(1, 'Court name is required'),
   sport: z.nativeEnum(Sport, { required_error: 'Sport is required' }),
-  surface: z.nativeEnum(Surface).optional(),
+  surface: z.nativeEnum(Surface).optional().or(z.undefined()),
   indoor: z.boolean().default(false),
   notes: z.string().optional(),
   slotMinutes: z.number().min(15).max(480),
@@ -191,14 +191,13 @@ export function CreateCourtDialog({
             <div className="space-y-2">
               <Label htmlFor="surface">Surface (Optional)</Label>
               <Select
-                value={form.watch('surface') || ''}
-                onValueChange={value => form.setValue('surface', value ? (value as Surface) : undefined)}
+                value={form.watch('surface') || undefined}
+                onValueChange={value => form.setValue('surface', value as Surface)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select surface" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No surface specified</SelectItem>
                   {Object.entries(SURFACE_DISPLAY_NAMES).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}

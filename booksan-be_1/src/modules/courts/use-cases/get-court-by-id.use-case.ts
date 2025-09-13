@@ -6,7 +6,10 @@ import { CourtWithFacilityResponseDto } from '../dto/court.dto';
 export class GetCourtByIdUseCase {
   constructor(private readonly courtService: CourtService) {}
 
-  async execute(id: string): Promise<CourtWithFacilityResponseDto> {
-    return this.courtService.getCourtById(id);
+  async execute(
+    id: string,
+    facilityId: string,
+  ): Promise<CourtWithFacilityResponseDto> {
+    return this.courtService.getCourtById(id, facilityId);
   }
 }

@@ -6,6 +6,7 @@ import {
   HttpCode,
   Get,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   SignupDto,
@@ -22,10 +23,12 @@ import {
 } from '@/modules/auth/use-cases';
 import { OAuthService } from '@/modules/auth/services';
 import { Public, CurrentUser } from '@/modules/auth/decorators';
+import { JwtAuthGuard, OwnerRoleGuard } from '@/modules/auth/guards';
 import { OwnerProfile } from '@/repositories/auth.repository';
 import { UserRole } from '@prisma/client';
 
 @Controller('owner/auth')
+@UseGuards(JwtAuthGuard, OwnerRoleGuard)
 export class OwnerAuthController {
   constructor(
     private readonly signupUseCase: SignupUseCase,

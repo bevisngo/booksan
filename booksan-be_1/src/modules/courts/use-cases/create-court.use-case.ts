@@ -6,11 +6,10 @@ import { CreateCourtDto, CourtResponseDto } from '../dto/court.dto';
 export class CreateCourtUseCase {
   constructor(private readonly courtService: CourtService) {}
 
-  async execute(createCourtDto: CreateCourtDto): Promise<CourtResponseDto> {
-    // get facility by user id
-    // const facility = await this.facilityRepository.findByUserId(
-    //   createCourtDto.userId,
-    // );
-    return this.courtService.createCourt(createCourtDto);
+  async execute(
+    createCourtDto: CreateCourtDto,
+    facilityId: string,
+  ): Promise<CourtResponseDto> {
+    return this.courtService.createCourt(createCourtDto, facilityId);
   }
 }

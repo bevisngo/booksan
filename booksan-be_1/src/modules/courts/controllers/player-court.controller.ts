@@ -1,5 +1,12 @@
-import { Public } from '@/modules/auth/decorators';
-import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { JwtAuthGuard, PlayerRoleGuard } from '@/modules/auth/guards';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { Sport, Surface } from '@prisma/client';
 import {
   CourtResponseDto,
@@ -7,9 +14,11 @@ import {
 } from '../dto/court.dto';
 import { CourtService } from '../services/court.service';
 import { GetCourtByIdUseCase, GetCourtsByFacilityUseCase } from '../use-cases';
+import { CurrentUser } from '@/modules/auth/decorators';
+import { OwnerProfile } from '@/repositories/auth.repository';
 
 @Controller('player/courts')
-@Public() // Players can view courts without authentication
+@UseGuards(JwtAuthGuard, PlayerRoleGuard)
 export class PlayerCourtController {
   constructor(
     private readonly courtService: CourtService,
@@ -41,8 +50,10 @@ export class PlayerCourtController {
   @Get(':id')
   async getCourtById(
     @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: OwnerProfile,
   ): Promise<CourtWithFacilityResponseDto> {
-    const court = await this.getCourtByIdUseCase.execute(id);
+    const facilityId = user.facilityId;
+    const court = await this.getCourtByIdUseCase.execute(id, facilityId);
 
     // Only show active courts to players
     if (!court.isActive) {

@@ -6,6 +6,7 @@ import {
   HttpCode,
   Get,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   SignupDto,
@@ -22,9 +23,11 @@ import {
 } from '@/modules/auth/use-cases';
 import { OAuthService } from '@/modules/auth/services';
 import { Public, CurrentUser } from '@/modules/auth/decorators';
+import { JwtAuthGuard, PlayerRoleGuard } from '@/modules/auth/guards';
 import { UserProfile } from '@/repositories/auth.repository';
 
 @Controller('player/auth')
+@UseGuards(JwtAuthGuard, PlayerRoleGuard)
 export class PlayerAuthController {
   constructor(
     private readonly signupUseCase: SignupUseCase,

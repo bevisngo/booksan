@@ -1,9 +1,5 @@
 import { Module } from '@nestjs/common';
-import {
-  CourtController,
-  PlayerCourtController,
-  OwnerCourtController,
-} from './controllers';
+import { PlayerCourtController, OwnerCourtController } from './controllers';
 import { CourtService } from './services';
 import {
   CreateCourtUseCase,
@@ -20,7 +16,7 @@ import { AuthModule } from '@/modules/auth';
 
 @Module({
   imports: [FacilitiesModule, RepositoriesModule, AuthModule],
-  controllers: [CourtController, PlayerCourtController, OwnerCourtController],
+  controllers: [PlayerCourtController, OwnerCourtController],
   providers: [
     CourtService,
     CreateCourtUseCase,

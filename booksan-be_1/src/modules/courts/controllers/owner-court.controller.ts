@@ -1,5 +1,5 @@
-import { CurrentUser, Roles } from '@/modules/auth/decorators';
-import { JwtAuthGuard, RolesGuard } from '@/modules/auth/guards';
+import { CurrentUser } from '@/modules/auth/decorators';
+import { JwtAuthGuard, OwnerRoleGuard } from '@/modules/auth/guards';
 import { OwnerProfile } from '@/repositories/auth.repository';
 import {
   Body,
@@ -10,13 +10,14 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
 import {
   CourtResponseDto,
   CourtWithFacilityResponseDto,
+  CreateCourtDto,
   UpdateCourtDto,
 } from '../dto/court.dto';
 import { CourtService } from '../services/court.service';
@@ -30,8 +31,7 @@ import {
 } from '../use-cases';
 
 @Controller('owner/courts')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.OWNER, UserRole.ADMIN)
+@UseGuards(JwtAuthGuard, OwnerRoleGuard)
 export class OwnerCourtController {
   constructor(
     private readonly courtService: CourtService,
@@ -45,7 +45,7 @@ export class OwnerCourtController {
 
   // get all courts for a facility
   @Get()
-  async getCourtsByFacility(
+  async getCourts(
     @CurrentUser() user: OwnerProfile,
   ): Promise<CourtResponseDto[]> {
     const facilityId = user.facilityId;
@@ -57,16 +57,22 @@ export class OwnerCourtController {
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: OwnerProfile,
   ): Promise<CourtWithFacilityResponseDto> {
-    const court = await this.getCourtByIdUseCase.execute(id);
-
+    const facilityId = user.facilityId;
+    const court = await this.getCourtByIdUseCase.execute(id, facilityId);
     // Validate court ownership by checking if court belongs to owner's facility
-    if (court.facility?.id !== user.facilityId) {
-      throw new Error(
-        'Access denied: You can only view courts for your own facility',
-      );
+    if (court) {
+      return court;
     }
+    throw new Error('Court not found');
+  }
 
-    return court;
+  @Post()
+  async createCourt(
+    @Body() createCourtDto: CreateCourtDto,
+    @CurrentUser() user: OwnerProfile,
+  ): Promise<CourtResponseDto> {
+    const facilityId = user.facilityId;
+    return this.createCourtUseCase.execute(createCourtDto, facilityId);
   }
 
   @Put(':id')

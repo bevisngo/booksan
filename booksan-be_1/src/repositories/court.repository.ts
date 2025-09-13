@@ -82,9 +82,12 @@ export class CourtRepository extends BaseRepository<
     });
   }
 
-  async findByIdWithFacility(id: string): Promise<CourtWithFacility | null> {
+  async findByIdWithFacility(
+    id: string,
+    facilityId: string,
+  ): Promise<CourtWithFacility | null> {
     return this.prisma.court.findUnique({
-      where: { id },
+      where: { id, facilityId },
       include: {
         facility: {
           select: {

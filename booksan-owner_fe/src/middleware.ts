@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   
   // Only handle root redirect to facilities - let client-side auth handle the rest
   if (pathname === '/') {
-    return NextResponse.redirect(new URL('/facilities', request.url));
+    return NextResponse.redirect(new URL('/courts', request.url));
   }
   
   return NextResponse.next();

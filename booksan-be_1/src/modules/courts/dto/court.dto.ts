@@ -10,11 +10,9 @@ import {
 } from 'class-validator';
 import { Sport, Surface } from '@prisma/client';
 import { BaseFilterDto, BasePaginationResponseDto } from '@/common/dto';
+import { Exclude } from 'class-transformer';
 
 export class CreateCourtDto {
-  @IsUUID()
-  facilityId: string;
-
   @IsString()
   name: string;
 

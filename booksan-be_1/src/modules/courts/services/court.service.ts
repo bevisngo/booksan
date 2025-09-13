@@ -33,13 +33,14 @@ export class CourtService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async createCourt(createCourtDto: CreateCourtDto): Promise<CourtResponseDto> {
+  async createCourt(
+    createCourtDto: CreateCourtDto,
+    facilityId: string,
+  ): Promise<CourtResponseDto> {
     this.logger.debug(`Creating court: ${createCourtDto.name}`);
 
     // Validate facility exists
-    const facility = await this.facilityRepository.findById(
-      createCourtDto.facilityId,
-    );
+    const facility = await this.facilityRepository.findById(facilityId);
     if (!facility) {
       throw new NotFoundException('Facility not found');
     }
@@ -47,7 +48,7 @@ export class CourtService {
     // Check for duplicate court name in the same facility
     const existingCourt = await this.courtRepository.findMany({
       where: {
-        facilityId: createCourtDto.facilityId,
+        facilityId: facilityId,
         name: createCourtDto.name,
       },
       limit: 1,
@@ -60,7 +61,7 @@ export class CourtService {
     }
 
     const courtData: CreateCourtData = {
-      facilityId: createCourtDto.facilityId,
+      facilityId: facilityId,
       name: createCourtDto.name,
       sport: createCourtDto.sport,
       surface: createCourtDto.surface,
@@ -125,8 +126,14 @@ export class CourtService {
     return this.mapCourtToResponseDto(court);
   }
 
-  async getCourtById(id: string): Promise<CourtWithFacilityResponseDto> {
-    const court = await this.courtRepository.findByIdWithFacility(id);
+  async getCourtById(
+    id: string,
+    facilityId: string,
+  ): Promise<CourtWithFacilityResponseDto> {
+    const court = await this.courtRepository.findByIdWithFacility(
+      id,
+      facilityId,
+    );
     if (!court) {
       throw new NotFoundException('Court not found');
     }

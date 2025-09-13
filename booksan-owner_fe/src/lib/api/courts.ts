@@ -9,13 +9,9 @@ import type {
 } from '@/types/court';
 
 export class CourtApi {
-  static async getCourts(facilityId: string, filters: FacilityFilters = {}): Promise<Court[]> {
-    if (!facilityId) {
-      throw new Error('facilityId is required to get courts');
-    }
-
+  static async getCourts(filters: FacilityFilters = {}): Promise<Court[]> {
     const params = new URLSearchParams();
-    
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         params.append(key, value.toString());
@@ -23,8 +19,8 @@ export class CourtApi {
     });
 
     const queryString = params.toString();
-    const endpoint = `/owner/courts/facility/${facilityId}${queryString ? `?${queryString}` : ''}`;
-    
+    const endpoint = `/owner/courts${queryString ? `?${queryString}` : ''}`;
+
     return apiClient.get<Court[]>(endpoint);
   }
 
@@ -32,11 +28,8 @@ export class CourtApi {
     return apiClient.get<CourtWithFacility>(`/owner/courts/${id}`);
   }
 
-  static async createCourt(facilityId: string, data: CreateCourtData): Promise<Court> {
-    if (!facilityId) {
-      throw new Error('facilityId is required to create court');
-    }
-    return apiClient.post<Court>(`/owner/courts/facility/${facilityId}`, data);
+  static async createCourt(data: CreateCourtData): Promise<Court> {
+    return apiClient.post<Court>(`/owner/courts`, data);
   }
 
   static async updateCourt(id: string, data: UpdateCourtData): Promise<Court> {
@@ -47,11 +40,8 @@ export class CourtApi {
     return apiClient.delete(`/owner/courts/${id}`);
   }
 
-  static async getCourtsByFacility(facilityId: string): Promise<Court[]> {
-    if (!facilityId) {
-      throw new Error('facilityId is required to get courts');
-    }
-    return apiClient.get<Court[]>(`/owner/courts/facility/${facilityId}`);
+  static async getCourtsByFacility(): Promise<Court[]> {
+    return apiClient.get<Court[]>(`/owner/courts`);
   }
 
   static async activateCourt(id: string): Promise<Court> {
@@ -62,11 +52,8 @@ export class CourtApi {
     return apiClient.put<Court>(`/owner/courts/${id}/deactivate`);
   }
 
-  static async getCourtStats(facilityId: string): Promise<CourtStats> {
-    if (!facilityId) {
-      throw new Error('facilityId is required to get court stats');
-    }
-    return apiClient.get<CourtStats>(`/owner/courts/facility/${facilityId}/stats`);
+  static async getCourtStats(): Promise<CourtStats> {
+    return apiClient.get<CourtStats>(`/owner/courts/stats`);
   }
 }
 
