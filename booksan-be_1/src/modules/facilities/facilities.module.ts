@@ -6,14 +6,8 @@ import { AuthModule } from '@/modules/auth';
 
 @Module({
   imports: [RepositoriesModule, AuthModule],
-  controllers: [
-    FacilityProfileController,
-  ],
-  providers: [
-    FacilityProfileService,
-  ],
-  exports: [
-    FacilityProfileService,
-  ],
+  controllers: [FacilityProfileController],
+  providers: [FacilityProfileService],
+  exports: [FacilityProfileService],
 })
 export class FacilitiesModule {}

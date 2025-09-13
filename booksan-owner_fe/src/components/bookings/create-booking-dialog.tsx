@@ -51,16 +51,34 @@ const bookingSchema = z.object({
 type BookingFormData = z.infer<typeof bookingSchema>;
 
 interface CreateBookingDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
+  onSuccess?: () => void;
+  courtId?: string;
+  preselectedCourt?: any;
+  initialDate?: string;
+  initialTime?: string;
 }
 
 export function CreateBookingDialog({
   open,
+  isOpen,
   onOpenChange,
+  onClose,
   onSuccess,
+  courtId: propCourtId,
+  preselectedCourt,
+  initialDate,
+  initialTime,
 }: CreateBookingDialogProps) {
+  const isDialogOpen = open ?? isOpen ?? false;
+  const handleOpenChange = onOpenChange ?? ((open: boolean) => !open && onClose?.());
+  const handleSuccess = () => {
+    onSuccess?.();
+    handleOpenChange(false);
+  };
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [priceSimulation, setPriceSimulation] = React.useState<PriceSimulation | null>(null);
@@ -78,8 +96,10 @@ export function CreateBookingDialog({
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
-      duration: 60,
-      date: format(new Date(), 'yyyy-MM-dd'),
+      duration: preselectedCourt?.slotMinutes || 60,
+      date: initialDate || format(new Date(), 'yyyy-MM-dd'),
+      startTime: initialTime || '',
+      courtId: propCourtId || '',
     },
   });
 
@@ -153,7 +173,7 @@ export function CreateBookingDialog({
       
       reset();
       setPriceSimulation(null);
-      onSuccess();
+      handleSuccess();
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -165,16 +185,16 @@ export function CreateBookingDialog({
     }
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
+  const handleDialogOpenChange = (newOpen: boolean) => {
     if (!newOpen && !isSubmitting) {
       reset();
       setPriceSimulation(null);
     }
-    onOpenChange(newOpen);
+    handleOpenChange(newOpen);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Booking</DialogTitle>
@@ -372,7 +392,7 @@ export function CreateBookingDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleOpenChange(false)}
+              onClick={() => handleDialogOpenChange(false)}
               disabled={isSubmitting}
             >
               Cancel

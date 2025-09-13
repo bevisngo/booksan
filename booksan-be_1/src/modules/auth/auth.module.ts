@@ -69,12 +69,6 @@ import { RepositoriesModule } from '@/repositories';
       useClass: RolesGuard,
     },
   ],
-  exports: [
-    JwtService,
-    HashService,
-    OAuthService,
-    JwtAuthGuard,
-    RolesGuard,
-  ],
+  exports: [JwtService, HashService, OAuthService, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}

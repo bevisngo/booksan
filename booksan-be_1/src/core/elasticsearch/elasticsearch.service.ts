@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ElasticsearchService as ESService } from '@nestjs/elasticsearch';
 import { ConfigService } from '@nestjs/config';

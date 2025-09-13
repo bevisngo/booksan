@@ -1,5 +1,8 @@
 import { BaseFilterDto } from '../dto/base-filter.dto';
-import { PaginationOptions, FilterOptions } from '@/shared/repositories/base-repository.interface';
+import {
+  PaginationOptions,
+  FilterOptions,
+} from '@/shared/repositories/base-repository.interface';
 
 export interface PrismaQueryOptions {
   where?: Record<string, any>;
@@ -26,7 +29,7 @@ export class FilterToPrismaUtil {
     // Handle where clause
     if (customWhere || filters.search) {
       query.where = { ...customWhere };
-      
+
       // Add search functionality if provided
       if (filters.search && filters.search.trim()) {
         // This will be extended per entity based on searchable fields
@@ -132,7 +135,7 @@ export class FilterToPrismaUtil {
     ...conditions: (Record<string, any> | undefined)[]
   ): Record<string, any> {
     const validConditions = conditions.filter(Boolean);
-    
+
     if (validConditions.length === 0) {
       return {};
     }

@@ -32,7 +32,9 @@ export class PlayerRoleGuard implements CanActivate {
     }
 
     if (user.role !== 'PLAYER') {
-      throw new ForbiddenException('Access denied. This endpoint is only available for players.');
+      throw new ForbiddenException(
+        'Access denied. This endpoint is only available for players.',
+      );
     }
 
     return true;

@@ -6,6 +6,7 @@ import {
   FacilityProfileRepository,
   FacilityPageTemplateRepository,
   CourtRepository,
+  BookingRepository,
 } from './index';
 
 @Module({
@@ -16,6 +17,7 @@ import {
     FacilityProfileRepository,
     FacilityPageTemplateRepository,
     CourtRepository,
+    BookingRepository,
   ],
   exports: [
     AuthRepository,
@@ -23,6 +25,7 @@ import {
     FacilityProfileRepository,
     FacilityPageTemplateRepository,
     CourtRepository,
+    BookingRepository,
   ],
 })
 export class RepositoriesModule {}

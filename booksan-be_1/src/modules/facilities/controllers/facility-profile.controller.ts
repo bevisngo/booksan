@@ -1,5 +1,9 @@
 import { Public, Roles } from '@/modules/auth/decorators';
-import { JwtAuthGuard, RolesGuard, OwnerRoleGuard } from '@/modules/auth/guards';
+import {
+  JwtAuthGuard,
+  RolesGuard,
+  OwnerRoleGuard,
+} from '@/modules/auth/guards';
 import {
   Body,
   Controller,

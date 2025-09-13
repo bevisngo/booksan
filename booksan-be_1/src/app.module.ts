@@ -7,6 +7,7 @@ import { RepositoriesModule } from '@/repositories';
 import { AuthModule } from '@/modules/auth';
 import { FacilitiesModule } from '@/modules/facilities';
 import { CourtsModule } from '@/modules/courts';
+import { BookingsModule } from '@/modules/bookings';
 import { envSchema } from '@/config/schema.config';
 
 @Module({
@@ -22,6 +23,7 @@ import { envSchema } from '@/config/schema.config';
     AuthModule,
     FacilitiesModule,
     CourtsModule,
+    BookingsModule,
   ],
   controllers: [],
   providers: [],

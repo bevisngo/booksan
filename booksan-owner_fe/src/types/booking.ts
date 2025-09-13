@@ -11,7 +11,7 @@ export interface Booking {
   id: string;
   bookingCode: string;
   status: BookingStatus;
-  
+
   // Court and timing
   courtId: string;
   courtName: string;
@@ -19,21 +19,21 @@ export interface Booking {
   startTime: string; // HH:mm format
   endTime: string; // HH:mm format
   duration: number; // minutes
-  
+
   // Player information
   player: Player;
-  
+
   // Pricing
   basePrice: number;
   totalAmount: number;
-  
+
   // Metadata
   notes?: string;
   cancelReason?: string;
   isPaid?: boolean;
   createdAt: string;
   updatedAt: string;
-  
+
   // Owner information
   ownerId: string;
 }

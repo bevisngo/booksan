@@ -234,7 +234,7 @@ export function BookingsPage() {
             </Card>
           ))}
         </div>
-      ) : bookings?.bookings.length === 0 ? (
+      ) : bookings.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-12">
@@ -259,7 +259,7 @@ export function BookingsPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookings?.bookings.map((booking) => (
+          {bookings.map((booking) => (
             <BookingCard
               key={booking.id}
               booking={booking}
@@ -269,8 +269,8 @@ export function BookingsPage() {
         </div>
       )}
 
-      {/* Pagination */}
-      {bookings && bookings.totalPages > 1 && (
+      {/* Pagination - TODO: Add pagination support to hook 
+      {bookings && bookings.length > 0 && false && (
         <div className="flex justify-center space-x-2">
           <Button
             variant="outline"
@@ -290,7 +290,7 @@ export function BookingsPage() {
             Next
           </Button>
         </div>
-      )}
+      )} */}
 
       {/* Create Booking Dialog */}
       <CreateBookingDialog

@@ -145,10 +145,10 @@ export class CourtService {
     this.logger.debug(`Getting courts for facility: ${facilityId}`);
 
     // Validate facility exists
-    const facility = await this.facilityRepository.findById(facilityId);
-    if (!facility) {
-      throw new NotFoundException('Facility not found');
-    }
+    // const facility = await this.facilityRepository.findById(facilityId);
+    // if (!facility) {
+    //   throw new NotFoundException('Facility not found');
+    // }
 
     const courts = await this.courtRepository.findByFacilityId(facilityId);
     return courts.map(court => this.mapCourtToResponseDto(court));

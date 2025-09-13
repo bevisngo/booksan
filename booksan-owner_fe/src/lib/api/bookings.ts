@@ -21,9 +21,27 @@ export class BookingApi {
     });
 
     const queryString = params.toString();
-    const endpoint = `/bookings${queryString ? `?${queryString}` : ''}`;
+    const endpoint = `/owner/bookings${queryString ? `?${queryString}` : ''}`;
     
     return apiClient.get<BookingsResponse>(endpoint);
+  }
+
+  static async getCourtBookings(
+    courtId: string, 
+    filters: { view?: 'day' | 'week' | 'month'; startDate?: string } = {}
+  ): Promise<any[]> {
+    const params = new URLSearchParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value.toString());
+      }
+    });
+
+    const queryString = params.toString();
+    const endpoint = `/owner/bookings/courts/${courtId}${queryString ? `?${queryString}` : ''}`;
+    
+    return apiClient.get<any[]>(endpoint);
   }
 
   static async getBooking(id: string): Promise<Booking> {
@@ -31,15 +49,15 @@ export class BookingApi {
   }
 
   static async createBooking(data: CreateBookingData): Promise<Booking> {
-    return apiClient.post<Booking>('/bookings', data);
+    return apiClient.post<Booking>('/owner/bookings', data);
   }
 
   static async updateBooking(id: string, data: UpdateBookingData): Promise<Booking> {
     return apiClient.put<Booking>(`/bookings/${id}`, data);
   }
 
-  static async cancelBooking(id: string, reason: string): Promise<Booking> {
-    return apiClient.put<Booking>(`/bookings/${id}/cancel`, { reason });
+  static async cancelBooking(slotId: string, reason: string): Promise<void> {
+    return apiClient.post(`/owner/bookings/slots/${slotId}/cancel`, { reason });
   }
 
   static async simulatePrice(data: {

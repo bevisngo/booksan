@@ -12,7 +12,7 @@ interface CourtStatsCardProps {
 }
 
 export function CourtStatsCard({ facilityId, className }: CourtStatsCardProps) {
-  const { stats, loading, error } = useCourtStats(facilityId);
+  const { stats, loading, error } = useCourtStats();
 
   if (loading) {
     return (

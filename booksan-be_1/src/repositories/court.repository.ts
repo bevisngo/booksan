@@ -57,8 +57,8 @@ export class CourtRepository extends BaseRepository<
   }
 
   async findByFacilityId(facilityId: string): Promise<Court[]> {
-    return this.findMany({
-      where: { facilityId, isActive: true },
+    return await this.findMany({
+      where: { facilityId },
       orderBy: { name: 'asc' },
     }).then(result => result.data);
   }

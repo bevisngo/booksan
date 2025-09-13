@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { MoreHorizontal, Edit, Trash2, Power, PowerOff, MapPin } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Power, PowerOff, MapPin, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -70,6 +71,12 @@ export function CourtCard({ court, onUpdate, onDelete, onToggleActive }: CourtCa
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/courts/${court.id}`}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    View Details
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={onUpdate}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
