@@ -1,11 +1,11 @@
 import { api, CacheTags } from "@/lib/fetcher";
-import { SearchVenuesParams, SearchVenuesResponse } from "./types";
+import { SearchFacilitiesParams, SearchFacilitiesResponse } from "./types";
 
 export const searchRepo = {
-  // Search venues with filters
-  searchVenues: async (
-    params: SearchVenuesParams
-  ): Promise<SearchVenuesResponse> => {
+  // Search facilities with filters
+  searchFacilities: async (
+    params: SearchFacilitiesParams
+  ): Promise<SearchFacilitiesResponse> => {
     const searchParams = new URLSearchParams();
 
     // Add parameters to search params
@@ -24,32 +24,32 @@ export const searchRepo = {
     if (params.offset) searchParams.append("offset", params.offset.toString());
 
     const queryString = searchParams.toString();
-    const url = `/venues/search${queryString ? `?${queryString}` : ""}`;
+    const url = `/facilities/search${queryString ? `?${queryString}` : ""}`;
 
-    return api.get<SearchVenuesResponse>(url, {
+    return api.get<SearchFacilitiesResponse>(url, {
       tags: [CacheTags.VENUES],
       revalidate: 300, // Cache for 5 minutes
     });
   },
 
-  // Get venue by ID
-  getVenue: async (id: string) => {
-    return api.get(`/venues/${id}`, {
+  // Get facility by ID
+  getFacility: async (id: string) => {
+    return api.get(`/facilities/${id}`, {
       tags: [CacheTags.VENUES],
       revalidate: 600, // Cache for 10 minutes
     });
   },
 
-  // Get popular venues
-  getPopularVenues: async (limit: number = 10) => {
-    return api.get(`/venues/popular?limit=${limit}`, {
+  // Get popular facilities
+  getPopularFacilities: async (limit: number = 10) => {
+    return api.get(`/facilities/popular?limit=${limit}`, {
       tags: [CacheTags.VENUES],
       revalidate: 1800, // Cache for 30 minutes
     });
   },
 
-  // Get nearby venues
-  getNearbyVenues: async (
+  // Get nearby facilities
+  getNearbyFacilities: async (
     lat: number,
     lon: number,
     maxDistance: string = "10km",
@@ -64,8 +64,8 @@ export const searchRepo = {
       sortOrder: "ASC",
     });
 
-    return api.get<SearchVenuesResponse>(
-      `/venues/search?${params.toString()}`,
+    return api.get<SearchFacilitiesResponse>(
+      `/facilities/search?${params.toString()}`,
       {
         tags: [CacheTags.VENUES],
         revalidate: 300, // Cache for 5 minutes

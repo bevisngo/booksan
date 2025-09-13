@@ -18,7 +18,7 @@ export function SearchHeader({
     <div className="mb-6">
       <div className="flex gap-2">
         <Input
-          placeholder="Search venues, sports, or locations..."
+          placeholder="Search facilities, sports, or locations..."
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           className="flex-1"

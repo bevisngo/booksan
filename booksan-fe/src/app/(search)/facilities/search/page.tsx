@@ -1,7 +1,7 @@
-import { fetchInitialVenues } from "@/app/(search)/actions";
+import { fetchInitialFacilities } from "@/app/(search)/actions";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SearchFiltersWrapper } from "@/components/venue/SearchFiltersWrapper";
-import { VenueListClient } from "@/components/venue/VenueListClient";
+import { SearchFiltersWrapper } from "@/components/facility/SearchFiltersWrapper";
+import { FacilityListClient } from "@/components/facility/FacilityListClient";
 import {
   buildCanonicalUrl,
   generatePageDescription,
@@ -55,8 +55,8 @@ export default async function SearchPage({
 }: SearchPageProps) {
   const parsedSearchParams = await parseSearchParams(searchParams);
 
-  // Fetch initial venues for SSR
-  const result = await fetchInitialVenues(undefined, undefined, undefined, searchParams);
+  // Fetch initial facilities for SSR
+  const result = await fetchInitialFacilities(undefined, undefined, undefined, searchParams);
   if (!result.success || !result.data) {
     // Handle error state
     return (
@@ -64,20 +64,20 @@ export default async function SearchPage({
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Search Error</h1>
           <p className="text-muted-foreground">
-            {result.error || "Failed to load venues. Please try again."}
+            {result.error || "Failed to load facilities. Please try again."}
           </p>
         </div>
       </div>
     );
   }
 
-  const venueData = result.data;
+  const facilityData = result.data;
   const canonicalUrl = buildCanonicalUrl(parsedSearchParams);
 
   // Generate structured data for SEO
   const structuredData = generateSearchResultsStructuredData({
-    venues: venueData.venues,
-    totalCount: venueData.total,
+    facilities: facilityData.facilities,
+    totalCount: facilityData.total,
     currentPage: parsedSearchParams.page,
     canonicalUrl,
   });
@@ -126,10 +126,10 @@ export default async function SearchPage({
           />
         </Suspense>
 
-        {/* Venue List with Infinite Scroll */}
-        <Suspense fallback={<VenueListSkeleton />}>
-          <VenueListClient
-            initialData={venueData}
+        {/* Facility List with Infinite Scroll */}
+        <Suspense fallback={<FacilityListSkeleton />}>
+          <FacilityListClient
+            initialData={facilityData}
             searchParams={{
               page: parsedSearchParams.page,
               sort: parsedSearchParams.sort,
@@ -164,7 +164,7 @@ function FiltersSkeleton() {
   );
 }
 
-function VenueListSkeleton() {
+function FacilityListSkeleton() {
   return (
     <div className="space-y-6">
       <Skeleton className="h-6 w-48" />

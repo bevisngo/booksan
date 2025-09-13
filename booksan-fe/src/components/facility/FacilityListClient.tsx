@@ -7,25 +7,25 @@ import React, {
   useState,
   useTransition,
 } from "react";
-import { VenueCard } from "@/components/search/VenueCard";
+import { FacilityCard } from "@/components/search/FacilityCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Venue, VenueSearchResult } from "@/features/search/types";
-import { fetchNextVenuesPage } from "@/app/(search)/actions";
+import { Facility, FacilitySearchResult } from "@/features/search/types";
+import { fetchNextFacilitiesPage } from "@/app/(search)/actions";
 import { SearchParams } from "@/lib/search/params";
 import { useRouter } from "next/navigation";
 
-interface VenueListClientProps {
-  initialData: VenueSearchResult;
+interface FacilityListClientProps {
+  initialData: FacilitySearchResult;
   searchParams: SearchParams;
 }
 
-export function VenueListClient({
+export function FacilityListClient({
   initialData,
   searchParams,
-}: VenueListClientProps) {
+}: FacilityListClientProps) {
   const router = useRouter();
-  const [venues, setVenues] = useState<Venue[]>(initialData.venues);
+  const [facilities, setFacilities] = useState<Facility[]>(initialData.facilities);
   const [hasMore, setHasMore] = useState(initialData.hasMore);
   const [nextCursor, setNextCursor] = useState(initialData.nextCursor);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,13 +37,13 @@ export function VenueListClient({
 
   // Reset state when searchParams change (new search)
   useEffect(() => {
-    setVenues(initialData.venues);
+    setFacilities(initialData.facilities);
     setHasMore(initialData.hasMore);
     setNextCursor(initialData.nextCursor);
     setError(null);
   }, [initialData]);
 
-  const loadMoreVenues = useCallback(() => {
+  const loadMoreFacilities = useCallback(() => {
     if (!nextCursor || isLoading || isPending) return;
 
     setIsLoading(true);
@@ -51,18 +51,18 @@ export function VenueListClient({
 
     startTransition(async () => {
       try {
-        const result = await fetchNextVenuesPage(searchParams, nextCursor);
+        const result = await fetchNextFacilitiesPage(searchParams, nextCursor);
 
         if (result.success && result.data) {
-          setVenues((prev) => [...prev, ...result.data!.venues]);
+          setFacilities((prev) => [...prev, ...result.data!.facilities]);
           setHasMore(result.data.hasMore);
           setNextCursor(result.data.nextCursor);
         } else {
-          setError(result.error || "Failed to load more venues");
+          setError(result.error || "Failed to load more facilities");
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load more venues"
+          err instanceof Error ? err.message : "Failed to load more facilities"
         );
       } finally {
         setIsLoading(false);
@@ -78,7 +78,7 @@ export function VenueListClient({
       (entries) => {
         const [entry] = entries;
         if (entry && entry.isIntersecting && nextCursor) {
-          loadMoreVenues();
+          loadMoreFacilities();
         }
       },
       {
@@ -96,31 +96,31 @@ export function VenueListClient({
     return () => {
       observer.disconnect();
     };
-  }, [hasMore, isLoading, isPending, nextCursor, loadMoreVenues]);
+  }, [hasMore, isLoading, isPending, nextCursor, loadMoreFacilities]);
 
-  const handleViewDetails = (venue: Venue) => {
-    // Navigate to venue details page
-    router.push(`/venues/${venue.slug}`);
+  const handleViewDetails = (facility: Facility) => {
+    // Navigate to facility details page
+    router.push(`/facilities/${facility.slug}`);
   };
 
-  const handleCall = (venue: Venue) => {
-    if (venue.phone) {
-      window.open(`tel:${venue.phone}`, "_self");
+  const handleCall = (facility: Facility) => {
+    if (facility.phone) {
+      window.open(`tel:${facility.phone}`, "_self");
     }
   };
 
-  const handleVisitWebsite = (venue: Venue) => {
-    if (venue.website) {
-      window.open(venue.website, "_blank");
+  const handleVisitWebsite = (facility: Facility) => {
+    if (facility.website) {
+      window.open(facility.website, "_blank");
     }
   };
 
-  if (venues.length === 0 && !isLoading && !isPending) {
+  if (facilities.length === 0 && !isLoading && !isPending) {
     return (
       <Card>
         <CardContent className="pt-6 text-center">
           <p className="text-muted-foreground">
-            No venues found. Try adjusting your search criteria.
+            No facilities found. Try adjusting your search criteria.
           </p>
         </CardContent>
       </Card>
@@ -132,21 +132,21 @@ export function VenueListClient({
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {initialData.total} venue{initialData.total !== 1 ? "s" : ""} found
-          {venues.length < initialData.total && (
+          {initialData.total} facilit{initialData.total !== 1 ? "ies" : "y"} found
+          {facilities.length < initialData.total && (
             <span className="ml-2 text-xs text-blue-600">
-              (showing {venues.length} of {initialData.total})
+              (showing {facilities.length} of {initialData.total})
             </span>
           )}
         </p>
       </div>
 
-      {/* Venue grid */}
+      {/* Facility grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {venues.map((venue) => (
-          <VenueCard
-            key={venue.id}
-            venue={venue}
+        {facilities.map((facility) => (
+          <FacilityCard
+            key={facility.id}
+            facility={facility}
             onViewDetails={handleViewDetails}
             onCall={handleCall}
             onVisitWebsite={handleVisitWebsite}
@@ -198,7 +198,7 @@ export function VenueListClient({
               <button
                 onClick={() => {
                   setError(null);
-                  loadMoreVenues();
+                  loadMoreFacilities();
                 }}
                 className="text-red-600 hover:text-red-800 underline"
               >
@@ -217,14 +217,14 @@ export function VenueListClient({
         >
           {!isLoading && !isPending && (
             <p className="text-sm text-muted-foreground">
-              Scroll to load more venues
+              Scroll to load more facilities
             </p>
           )}
         </div>
       )}
 
       {/* End of results message */}
-      {!hasMore && venues.length > 0 && (
+      {!hasMore && facilities.length > 0 && (
         <div className="text-center py-8">
           <p className="text-muted-foreground">
             You&apos;ve reached the end of the results

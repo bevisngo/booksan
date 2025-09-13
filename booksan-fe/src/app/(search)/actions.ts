@@ -3,15 +3,15 @@
 import { revalidatePath } from 'next/cache'
 import { internalApi } from '@/lib/http/internalFetch'
 import { parseSearchParams, toApiParams, type SearchParams } from '@/lib/search/params'
-import { SearchVenuesResponse, ServerActionResult, VenueSearchResult } from '@/features/search/types'
+import { SearchFacilitiesResponse, ServerActionResult, FacilitySearchResult } from '@/features/search/types'
 
 /**
- * Server Action to fetch venues from NestJS backend
+ * Server Action to fetch facilities from NestJS backend
  * This runs on the server and never exposes the backend URL to the browser
  */
-export async function fetchVenuesPage(
+export async function fetchFacilitiesPage(
   searchParams: SearchParams
-): Promise<ServerActionResult<VenueSearchResult>> {
+): Promise<ServerActionResult<FacilitySearchResult>> {
   try {
     // Parse and validate search parameters
     const parsedParams = await parseSearchParams(searchParams as any)
@@ -21,14 +21,14 @@ export async function fetchVenuesPage(
     
     // Build query string for API request
     const queryString = new URLSearchParams(apiParams).toString()
-    const endpoint = `/venues/search${queryString ? `?${queryString}` : ''}`
+    const endpoint = `/facilities/search${queryString ? `?${queryString}` : ''}`
     
     // Make server-to-server request to NestJS
-    const response = await internalApi.get<SearchVenuesResponse>(endpoint)
+    const response = await internalApi.get<SearchFacilitiesResponse>(endpoint)
     
     // Transform response to match our expected format
-    const result: VenueSearchResult = {
-      venues: response.data.map(item => item.venue),
+    const result: FacilitySearchResult = {
+      facilities: response.data.map(item => item.facility),
       total: response.total,
       hasMore: response.meta.hasMore,
       // Generate next cursor based on current offset + limit
@@ -42,11 +42,11 @@ export async function fetchVenuesPage(
       data: result,
     }
   } catch (error) {
-    console.error('Failed to fetch venues:', error)
+    console.error('Failed to fetch facilities:', error)
     
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch venues',
+      error: error instanceof Error ? error.message : 'Failed to fetch facilities',
     }
   }
 }
@@ -55,12 +55,12 @@ export async function fetchVenuesPage(
  * Server Action to fetch initial page for SSR
  * This ensures the first page is server-rendered for SEO
  */
-export async function fetchInitialVenues(
+export async function fetchInitialFacilities(
   sport?: string,
   city?: string,
   district?: string,
   searchParams?: Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>
-): Promise<ServerActionResult<VenueSearchResult>> {
+): Promise<ServerActionResult<FacilitySearchResult>> {
   try {
     // Await searchParams if it's a Promise
     const resolvedSearchParams = searchParams ? await searchParams : {}
@@ -83,13 +83,13 @@ export async function fetchInitialVenues(
     if (resolvedSearchParams.price_max) params.price_max = Number(resolvedSearchParams.price_max)
     if (resolvedSearchParams.sort) params.sort = resolvedSearchParams.sort as any
     
-    return await fetchVenuesPage(params)
+    return await fetchFacilitiesPage(params)
   } catch (error) {
-    console.error('Failed to fetch initial venues:', error)
+    console.error('Failed to fetch initial facilities:', error)
     
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch venues',
+      error: error instanceof Error ? error.message : 'Failed to fetch facilities',
     }
   }
 }
@@ -98,10 +98,10 @@ export async function fetchInitialVenues(
  * Server Action to fetch next page for infinite scroll
  * This is called from client components via useTransition
  */
-export async function fetchNextVenuesPage(
+export async function fetchNextFacilitiesPage(
   searchParams: SearchParams,
   cursor: string
-): Promise<ServerActionResult<VenueSearchResult>> {
+): Promise<ServerActionResult<FacilitySearchResult>> {
   try {
     // Add cursor to search params for pagination
     const params: SearchParams = {
@@ -109,29 +109,29 @@ export async function fetchNextVenuesPage(
       ...(cursor && { cursor }),
     }
     
-    const result = await fetchVenuesPage(params)
+    const result = await fetchFacilitiesPage(params)
     
     // Optionally revalidate the path to ensure fresh data
-    // revalidatePath('/venues')
+    // revalidatePath('/facilities')
     
     return result
   } catch (error) {
-    console.error('Failed to fetch next venues page:', error)
+    console.error('Failed to fetch next facilities page:', error)
     
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch more venues',
+      error: error instanceof Error ? error.message : 'Failed to fetch more facilities',
     }
   }
 }
 
 /**
- * Server Action to search venues with new filters
+ * Server Action to search facilities with new filters
  * This triggers a new SSR render when filters change
  */
-export async function searchVenuesWithFilters(
+export async function searchFacilitiesWithFilters(
   filters: SearchParams
-): Promise<ServerActionResult<VenueSearchResult>> {
+): Promise<ServerActionResult<FacilitySearchResult>> {
   try {
     // Reset to page 1 when filters change
     const params: SearchParams = {
@@ -140,26 +140,26 @@ export async function searchVenuesWithFilters(
       // Don't include cursor property at all for new search
     }
     
-    const result = await fetchVenuesPage(params)
+    const result = await fetchFacilitiesPage(params)
     
     // Revalidate the current path to refresh SSR data
-    revalidatePath('/venues')
+    revalidatePath('/facilities')
     
     return result
   } catch (error) {
-    console.error('Failed to search venues with filters:', error)
+    console.error('Failed to search facilities with filters:', error)
     
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to search venues',
+      error: error instanceof Error ? error.message : 'Failed to search facilities',
     }
   }
 }
 
 /**
- * Helper function to get venue count for a location (for metadata)
+ * Helper function to get facility count for a location (for metadata)
  */
-export async function getVenueCount(
+export async function getFacilityCount(
   sport?: string,
   city?: string,
   district?: string
@@ -172,7 +172,7 @@ export async function getVenueCount(
       ...(district && { district }),
     }
     
-    const result = await fetchVenuesPage(params)
+    const result = await fetchFacilitiesPage(params)
     
     if (result.success && result.data) {
       return result.data.total
@@ -180,7 +180,7 @@ export async function getVenueCount(
     
     return 0
   } catch (error) {
-    console.error('Failed to get venue count:', error)
+    console.error('Failed to get facility count:', error)
     return 0
   }
 }

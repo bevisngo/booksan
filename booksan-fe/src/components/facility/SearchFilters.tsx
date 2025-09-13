@@ -96,8 +96,8 @@ export function SearchFilters({
     params.delete("page");
     params.delete("cursor");
 
-    // Always use /venues/search as the base path
-    const newPath = "/venues/search";
+    // Always use /facilities/search as the base path
+    const newPath = "/facilities/search";
     const queryString = params.toString();
     const newUrl = `${newPath}${queryString ? `?${queryString}` : ""}`;
 
@@ -187,7 +187,7 @@ export function SearchFilters({
         <div className="flex items-center gap-2">
           <div className="flex-1">
             <Input
-              placeholder="Search venues, sports, or locations..."
+              placeholder="Search facilities, sports, or locations..."
               value={formData.q}
               onChange={(e) => handleInputChange("q", e.target.value)}
               onKeyPress={handleKeyPress}

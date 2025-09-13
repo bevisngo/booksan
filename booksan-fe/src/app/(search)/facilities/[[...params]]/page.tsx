@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { FacilityPageClient } from "@/components/venue/FacilityPageClient";
+import { FacilityPageClient } from "@/components/facility/FacilityPageClient";
 import { api } from "@/lib/fetcher";
 import {
-  generateVenuePageMetadata,
-  generateVenueStructuredData,
-} from "@/lib/seo/venue-seo";
+  generateFacilityPageMetadata,
+  generateFacilityStructuredData,
+} from "@/lib/seo/facility-seo";
 
-interface VenuePageProps {
+interface FacilityPageProps {
   params: Promise<{
     params?: string[];
   }>;
@@ -43,9 +43,9 @@ async function getFacilityPageData(
   slug: string
 ): Promise<FacilityPageData | null> {
   try {
-    const data = await api.get<FacilityPageData>(`/venues/${slug}/page`, {
+    const data = await api.get<FacilityPageData>(`/facilities/${slug}/page`, {
       revalidate: 3600, // Cache for 1 hour
-      tags: ["venues", `venue-${slug}`],
+      tags: ["facilities", `facility-${slug}`],
     });
 
     return data;
@@ -66,9 +66,9 @@ async function getFacilitySEOData(
   slug: string
 ): Promise<FacilitySEOData | null> {
   try {
-    const data = await api.get<FacilitySEOData>(`/venues/${slug}/seo`, {
+    const data = await api.get<FacilitySEOData>(`/facilities/${slug}/seo`, {
       revalidate: 3600, // Cache for 1 hour
-      tags: ["venues", `venue-${slug}-seo`],
+      tags: ["facilities", `facility-${slug}-seo`],
     });
     return data;
   } catch (error: unknown) {
@@ -86,14 +86,14 @@ async function getFacilitySEOData(
 
 export async function generateMetadata({
   params,
-}: VenuePageProps): Promise<Metadata> {
+}: FacilityPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.params?.[0];
 
   if (!slug) {
     return {
-      title: "Venue Not Found",
-      description: "The requested venue could not be found.",
+      title: "Facility Not Found",
+      description: "The requested facility could not be found.",
     };
   }
 
@@ -101,29 +101,29 @@ export async function generateMetadata({
 
   if (!seoData) {
     return {
-      title: "Venue Not Found",
-      description: "The requested venue could not be found.",
+      title: "Facility Not Found",
+      description: "The requested facility could not be found.",
     };
   }
 
-  return generateVenuePageMetadata(seoData);
+  return generateFacilityPageMetadata(seoData);
 }
 
-export default async function VenuePage({ params }: VenuePageProps) {
+export default async function FacilityPage({ params }: FacilityPageProps) {
   const resolvedParams = await params;
   const slug = resolvedParams.params?.[0];
 
   // If no params, redirect to search page
   if (!slug) {
-    return <VenueSearchPage />;
+    return <FacilitySearchPage />;
   }
 
   // If slug is 'search', show search page
   if (slug === "search") {
-    return <VenueSearchPage />;
+    return <FacilitySearchPage />;
   }
 
-  // Otherwise, show individual venue page
+  // Otherwise, show individual facility page
   const [pageData, seoData] = await Promise.all([
     getFacilityPageData(slug),
     getFacilitySEOData(slug),
@@ -133,7 +133,7 @@ export default async function VenuePage({ params }: VenuePageProps) {
     notFound();
   }
 
-  const structuredData = generateVenueStructuredData({
+  const structuredData = generateFacilityStructuredData({
     name: pageData.facilityName,
     description: pageData.facilityDescription || "",
     slug: pageData.slug,
@@ -156,14 +156,14 @@ export default async function VenuePage({ params }: VenuePageProps) {
 }
 
 // Import the search page component
-async function VenueSearchPage() {
+async function FacilitySearchPage() {
   const { default: SearchPage } = await import("../search/page");
   return <SearchPage searchParams={Promise.resolve({})} />;
 }
 
-// Generate static params for popular venues (optional)
+// Generate static params for popular facilities (optional)
 export async function generateStaticParams() {
-  // You can implement this to pre-generate popular venue pages
+  // You can implement this to pre-generate popular facility pages
   // For now, we'll use ISR (Incremental Static Regeneration)
   return [];
 }

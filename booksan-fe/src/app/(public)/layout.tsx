@@ -18,10 +18,10 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link
-                href="/venues/search"
+                href="/facilities/search"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                Find Venues
+                Find Facilities
               </Link>
               <a
                 href="/about"
@@ -53,7 +53,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
             <div>
               <h3 className="text-lg font-semibold mb-4">Booksan</h3>
               <p className="text-muted-foreground text-sm">
-                Find and book sports venues near you. Play your favorite sports
+                Find and book sports facilities near you. Play your favorite sports
                 with ease.
               </p>
             </div>
@@ -62,10 +62,10 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <Link
-                    href="/venues/search"
+                    href="/facilities/search"
                     className="hover:text-foreground transition-colors"
                   >
-                    Find Venues
+                    Find Facilities
                   </Link>
                 </li>
                 <li>
@@ -73,7 +73,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                     href="/auth/signup"
                     className="hover:text-foreground transition-colors"
                   >
-                    List Your Venue
+                    List Your Facility
                   </a>
                 </li>
                 <li>

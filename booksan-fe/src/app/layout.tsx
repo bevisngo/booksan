@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Booksan - Book Sports Venues",
-  description: "Find and book sports venues near you. Play your favorite sports with ease.",
-  keywords: ["sports", "venues", "booking", "courts", "fields", "tennis", "basketball", "football"],
+  title: "Booksan - Book Sports Facilities",
+  description: "Find and book sports facilities near you. Play your favorite sports with ease.",
+  keywords: ["sports", "facilities", "booking", "courts", "fields", "tennis", "basketball", "football"],
   authors: [{ name: "Booksan Team" }],
   creator: "Booksan",
   publisher: "Booksan",
@@ -24,14 +24,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://booksan.com",
-    title: "Booksan - Book Sports Venues",
-    description: "Find and book sports venues near you. Play your favorite sports with ease.",
+    title: "Booksan - Book Sports Facilities",
+    description: "Find and book sports facilities near you. Play your favorite sports with ease.",
     siteName: "Booksan",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Booksan - Book Sports Venues",
-    description: "Find and book sports venues near you. Play your favorite sports with ease.",
+    title: "Booksan - Book Sports Facilities",
+    description: "Find and book sports facilities near you. Play your favorite sports with ease.",
     creator: "@booksan",
   },
   robots: {

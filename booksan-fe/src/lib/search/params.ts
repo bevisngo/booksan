@@ -211,8 +211,8 @@ export function buildCanonicalUrl(
 ): string {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   
-  // Always use /venues/search as the base path
-  const path = 'venues/search'
+  // Always use /facilities/search as the base path
+  const path = 'facilities/search'
   
   // Add clean query params (no lat/lng, no cursor, no sensitive data)
   const cleanParams = new URLSearchParams()
@@ -273,9 +273,9 @@ export function generatePageTitle(
   }
   
   if (sport) {
-    parts.push(`${sport.charAt(0).toUpperCase() + sport.slice(1)} Venues`)
+    parts.push(`${sport.charAt(0).toUpperCase() + sport.slice(1)} Facilities`)
   } else {
-    parts.push('Sports Venues')
+    parts.push('Sports Facilities')
   }
   
   if (district && city) {
@@ -298,10 +298,10 @@ export function generatePageDescription(
   district?: string,
   searchParams?: ParsedSearchParams
 ): string {
-  let description = 'Find and book amazing sports venues'
+  let description = 'Find and book amazing sports facilities'
   
   if (sport) {
-    description = `Find and book ${sport} venues`
+    description = `Find and book ${sport} facilities`
   }
   
   if (district && city) {
@@ -313,7 +313,7 @@ export function generatePageDescription(
   description += '. Instant booking, verified reviews, and competitive prices.'
   
   if (searchParams?.open_now) {
-    description += ' Currently open venues available.'
+    description += ' Currently open facilities available.'
   }
   
   return description

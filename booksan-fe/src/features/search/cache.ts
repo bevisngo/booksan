@@ -1,49 +1,49 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { searchRepo } from './repo'
-import { SearchVenuesParams } from './types'
+import { SearchFacilitiesParams } from './types'
 
 // Query keys
 export const searchKeys = {
   all: ['search'] as const,
-  venues: () => [...searchKeys.all, 'venues'] as const,
-  venueList: (params: SearchVenuesParams) => [...searchKeys.venues(), params] as const,
-  venue: (id: string) => [...searchKeys.all, 'venue', id] as const,
-  popular: (limit?: number) => [...searchKeys.venues(), 'popular', limit] as const,
+  facilities: () => [...searchKeys.all, 'facilities'] as const,
+  facilityList: (params: SearchFacilitiesParams) => [...searchKeys.facilities(), params] as const,
+  facility: (id: string) => [...searchKeys.all, 'facility', id] as const,
+  popular: (limit?: number) => [...searchKeys.facilities(), 'popular', limit] as const,
   nearby: (lat: number, lon: number, maxDistance?: string, limit?: number) => 
-    [...searchKeys.venues(), 'nearby', { lat, lon, maxDistance, limit }] as const,
+    [...searchKeys.facilities(), 'nearby', { lat, lon, maxDistance, limit }] as const,
 }
 
 // Hooks
-export function useSearchVenues(params: SearchVenuesParams) {
+export function useSearchFacilities(params: SearchFacilitiesParams) {
   return useQuery({
-    queryKey: searchKeys.venueList(params),
-    queryFn: () => searchRepo.searchVenues(params),
+    queryKey: searchKeys.facilityList(params),
+    queryFn: () => searchRepo.searchFacilities(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     enabled: true,
   })
 }
 
-export function useVenue(id: string) {
+export function useFacility(id: string) {
   return useQuery({
-    queryKey: searchKeys.venue(id),
-    queryFn: () => searchRepo.getVenue(id),
+    queryKey: searchKeys.facility(id),
+    queryFn: () => searchRepo.getFacility(id),
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
     enabled: !!id,
   })
 }
 
-export function usePopularVenues(limit: number = 10) {
+export function usePopularFacilities(limit: number = 10) {
   return useQuery({
     queryKey: searchKeys.popular(limit),
-    queryFn: () => searchRepo.getPopularVenues(limit),
+    queryFn: () => searchRepo.getPopularFacilities(limit),
     staleTime: 30 * 60 * 1000, // 30 minutes
     gcTime: 60 * 60 * 1000, // 1 hour
   })
 }
 
-export function useNearbyVenues(
+export function useNearbyFacilities(
   lat: number, 
   lon: number, 
   maxDistance: string = '10km', 
@@ -51,7 +51,7 @@ export function useNearbyVenues(
 ) {
   return useQuery({
     queryKey: searchKeys.nearby(lat, lon, maxDistance, limit),
-    queryFn: () => searchRepo.getNearbyVenues(lat, lon, maxDistance, limit),
+    queryFn: () => searchRepo.getNearbyFacilities(lat, lon, maxDistance, limit),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     enabled: !!(lat && lon),
@@ -70,18 +70,18 @@ export function useInvalidateSearch() {
 }
 
 // Utility functions
-export function prefetchVenue(queryClient: any, id: string) {
+export function prefetchFacility(queryClient: any, id: string) {
   return queryClient.prefetchQuery({
-    queryKey: searchKeys.venue(id),
-    queryFn: () => searchRepo.getVenue(id),
+    queryKey: searchKeys.facility(id),
+    queryFn: () => searchRepo.getFacility(id),
     staleTime: 10 * 60 * 1000,
   })
 }
 
-export function prefetchPopularVenues(queryClient: any, limit: number = 10) {
+export function prefetchPopularFacilities(queryClient: any, limit: number = 10) {
   return queryClient.prefetchQuery({
     queryKey: searchKeys.popular(limit),
-    queryFn: () => searchRepo.getPopularVenues(limit),
+    queryFn: () => searchRepo.getPopularFacilities(limit),
     staleTime: 30 * 60 * 1000,
   })
 }

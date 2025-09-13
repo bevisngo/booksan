@@ -1,4 +1,4 @@
-import { Venue } from "@/features/search/types";
+import { Facility } from "@/features/search/types";
 
 interface BreadcrumbItem {
   name: string;
@@ -9,20 +9,20 @@ interface StructuredDataOptions {
   sport?: string;
   city?: string;
   district?: string;
-  venues: Venue[];
+  facilities: Facility[];
   totalCount: number;
   currentPage: number;
   canonicalUrl: string;
 }
 
 /**
- * Generate JSON-LD structured data for venue search results
+ * Generate JSON-LD structured data for facility search results
  */
 export function generateSearchResultsStructuredData({
   sport,
   city,
   district,
-  venues,
+  facilities,
   totalCount,
   currentPage,
   canonicalUrl,
@@ -32,7 +32,7 @@ export function generateSearchResultsStructuredData({
   // Generate breadcrumbs
   const breadcrumbs = generateBreadcrumbs(sport, city, district);
 
-  // Generate ItemList for venues
+  // Generate ItemList for facilities
   const itemList = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -41,10 +41,10 @@ export function generateSearchResultsStructuredData({
     url: canonicalUrl,
     numberOfItems: totalCount,
     itemListOrder: "https://schema.org/ItemListOrderAscending",
-    itemListElement: venues.map((venue, index) => ({
+    itemListElement: facilities.map((facility, index) => ({
       "@type": "ListItem",
       position: (currentPage - 1) * 20 + index + 1, // Assuming 20 items per page
-      item: generateVenueStructuredData(venue),
+      item: generateFacilityStructuredData(facility),
     })),
   };
 
@@ -67,50 +67,50 @@ export function generateSearchResultsStructuredData({
 }
 
 /**
- * Generate structured data for a single venue
+ * Generate structured data for a single facility
  */
-function generateVenueStructuredData(venue: Venue) {
+function generateFacilityStructuredData(facility: Facility) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   return {
     "@type": "SportsActivityLocation",
-    "@id": `${baseUrl}/venues/${venue.id}`,
-    name: venue.name,
-    description: venue.description,
-    url: `${baseUrl}/venues/${venue.id}`,
+    "@id": `${baseUrl}/facilities/${facility.id}`,
+    name: facility.name,
+    description: facility.description,
+    url: `${baseUrl}/facilities/${facility.id}`,
     address: {
       "@type": "PostalAddress",
-      streetAddress: venue.address,
+      streetAddress: facility.address,
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: venue.location.lat,
-      longitude: venue.location.lon,
+      latitude: facility.location.lat,
+      longitude: facility.location.lon,
     },
-    telephone: venue.phone,
-    ...(venue.website && { sameAs: [venue.website] }),
-    ...(venue.rating &&
-      venue.reviewCount && {
+    telephone: facility.phone,
+    ...(facility.website && { sameAs: [facility.website] }),
+    ...(facility.rating &&
+      facility.reviewCount && {
         aggregateRating: {
           "@type": "AggregateRating",
-          ratingValue: venue.rating,
-          reviewCount: venue.reviewCount,
+          ratingValue: facility.rating,
+          reviewCount: facility.reviewCount,
           bestRating: 5,
           worstRating: 1,
         },
       }),
-    ...(venue.priceRange && {
-      priceRange: `$${venue.priceRange.min}-$${venue.priceRange.max}`,
+    ...(facility.priceRange && {
+      priceRange: `$${facility.priceRange.min}-$${facility.priceRange.max}`,
     }),
-    sport: venue.courts
+    sport: facility.courts
       .map((court) => court.sport)
       .filter((sport, index, array) => array.indexOf(sport) === index),
-    amenityFeature: venue.courts.map((court) => ({
+    amenityFeature: facility.courts.map((court) => ({
       "@type": "LocationFeatureSpecification",
       name: court.name,
       value: court.sport,
     })),
-    ...(venue.isPublished && {
+    ...(facility.isPublished && {
       offers: {
         "@type": "Offer",
         availability: "https://schema.org/InStock",
@@ -130,28 +130,28 @@ function generateBreadcrumbs(
 ): BreadcrumbItem[] {
   const breadcrumbs: BreadcrumbItem[] = [
     { name: "Home", url: "/" },
-    { name: "Venues", url: "/venues" },
-    { name: "Search", url: "/venues/search" },
+    { name: "Facilities", url: "/facilities" },
+    { name: "Search", url: "/facilities/search" },
   ];
 
   if (sport) {
     breadcrumbs.push({
-      name: `${sport.charAt(0).toUpperCase() + sport.slice(1)} Venues`,
-      url: `/venues/search?sport=${sport}`,
+      name: `${sport.charAt(0).toUpperCase() + sport.slice(1)} Facilities`,
+      url: `/facilities/search?sport=${sport}`,
     });
   }
 
   if (city) {
     breadcrumbs.push({
       name: city,
-      url: `/venues/search?city=${city}`,
+      url: `/facilities/search?city=${city}`,
     });
   }
 
   if (district) {
     breadcrumbs.push({
       name: district,
-      url: `/venues/search?district=${district}`,
+      url: `/facilities/search?district=${district}`,
     });
   }
 
@@ -169,9 +169,9 @@ function generateListName(
   const parts: string[] = [];
 
   if (sport) {
-    parts.push(`${sport.charAt(0).toUpperCase() + sport.slice(1)} Venues`);
+    parts.push(`${sport.charAt(0).toUpperCase() + sport.slice(1)} Facilities`);
   } else {
-    parts.push("Sports Venues");
+    parts.push("Sports Facilities");
   }
 
   if (district && city) {
@@ -191,10 +191,10 @@ function generateListDescription(
   city?: string,
   district?: string
 ): string {
-  let description = "Discover and book amazing sports venues";
+  let description = "Discover and book amazing sports facilities";
 
   if (sport) {
-    description = `Find the best ${sport} venues`;
+    description = `Find the best ${sport} facilities`;
   }
 
   if (district && city) {
@@ -217,7 +217,7 @@ export function generateOpenGraphData({
   city,
   district,
   canonicalUrl,
-}: Omit<StructuredDataOptions, "currentPage" | "venues" | "totalCount">) {
+}: Omit<StructuredDataOptions, "currentPage" | "facilities" | "totalCount">) {
   const title = generateListName(sport, city, district);
   const description = generateListDescription(sport, city, district);
 
@@ -230,7 +230,7 @@ export function generateOpenGraphData({
       {
         url: `${
           process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-        }/api/og/venues?sport=${sport || ""}&city=${city || ""}&district=${
+        }/api/og/facilities?sport=${sport || ""}&city=${city || ""}&district=${
           district || ""
         }`,
         width: 1200,
@@ -265,7 +265,7 @@ export function generateTwitterCardData({
     images: [
       `${
         process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-      }/api/og/venues?sport=${sport || ""}&city=${city || ""}&district=${
+      }/api/og/facilities?sport=${sport || ""}&city=${city || ""}&district=${
         district || ""
       }`,
     ],

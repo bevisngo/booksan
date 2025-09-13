@@ -47,7 +47,7 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Favorite Venues</CardTitle>
+            <CardTitle className="text-sm font-medium">Favorite Facilities</CardTitle>
             <span className="text-2xl">❤️</span>
           </CardHeader>
           <CardContent>
@@ -119,11 +119,11 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
-              <Link href="/venues/search">
-                <Button className="w-full">Find Venues</Button>
+              <Link href="/facilities/search">
+                <Button className="w-full">Find Facilities</Button>
               </Link>
-              <Link href="/venues">
-                <Button variant="outline" className="w-full">Browse Venues</Button>
+              <Link href="/facilities">
+                <Button variant="outline" className="w-full">Browse Facilities</Button>
               </Link>
               <Link href="/profile">
                 <Button variant="outline" className="w-full">Edit Profile</Button>

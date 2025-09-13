@@ -2,47 +2,47 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Venue } from '@/features/search/types'
+import { Facility } from '@/features/search/types'
 import { formatDistance } from '@/lib/location'
 import { MapPin, Star, Phone, Globe } from 'lucide-react'
 
-interface VenueCardProps {
-  venue: Venue
-  onViewDetails?: (venue: Venue) => void
-  onCall?: (venue: Venue) => void
-  onVisitWebsite?: (venue: Venue) => void
+interface FacilityCardProps {
+  facility: Facility
+  onViewDetails?: (facility: Facility) => void
+  onCall?: (facility: Facility) => void
+  onVisitWebsite?: (facility: Facility) => void
 }
 
-export function VenueCard({ 
-  venue, 
+export function FacilityCard({ 
+  facility, 
   onViewDetails, 
   onCall, 
   onVisitWebsite 
-}: VenueCardProps) {
+}: FacilityCardProps) {
   // Get unique sports from courts
-  const sports = [...new Set(venue.courts.map(court => court.sport))]
-  const activeCourts = venue.courts.filter(court => court.isActive)
+  const sports = [...new Set(facility.courts.map(court => court.sport))]
+  const activeCourts = facility.courts.filter(court => court.isActive)
   
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg">{venue.name}</CardTitle>
+            <CardTitle className="text-lg">{facility.name}</CardTitle>
             <CardDescription className="flex items-center gap-1 mt-1">
               <MapPin className="h-4 w-4" />
-              {venue.address}
+              {facility.address}
             </CardDescription>
           </div>
-          {venue.distance && (
-            <Badge variant="outline">{formatDistance(venue.distance)}</Badge>
+          {facility.distance && (
+            <Badge variant="outline">{formatDistance(facility.distance)}</Badge>
           )}
         </div>
       </CardHeader>
       <CardContent>
-        {venue.description && (
+        {facility.description && (
           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-            {venue.description}
+            {facility.description}
           </p>
         )}
 
@@ -63,18 +63,18 @@ export function VenueCard({
           <div className="text-muted-foreground">
             {activeCourts.length} court{activeCourts.length !== 1 ? 's' : ''} available
           </div>
-          {venue.rating && venue.reviewCount && (
+          {facility.rating && facility.reviewCount && (
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="font-medium">{venue.rating.toFixed(1)}</span>
-              <span className="text-muted-foreground">({venue.reviewCount})</span>
+              <span className="font-medium">{facility.rating.toFixed(1)}</span>
+              <span className="text-muted-foreground">({facility.reviewCount})</span>
             </div>
           )}
         </div>
 
-        {venue.priceRange && (
+        {facility.priceRange && (
           <div className="text-sm text-muted-foreground mb-3">
-            ${venue.priceRange.min} - ${venue.priceRange.max}
+            ${facility.priceRange.min} - ${facility.priceRange.max}
           </div>
         )}
 
@@ -82,24 +82,24 @@ export function VenueCard({
           <Button 
             size="sm" 
             className="flex-1"
-            onClick={() => onViewDetails?.(venue)}
+            onClick={() => onViewDetails?.(facility)}
           >
             View Details
           </Button>
-          {venue.phone && (
+          {facility.phone && (
             <Button 
               size="sm" 
               variant="outline"
-              onClick={() => onCall?.(venue)}
+              onClick={() => onCall?.(facility)}
             >
               <Phone className="h-4 w-4" />
             </Button>
           )}
-          {venue.website && (
+          {facility.website && (
             <Button 
               size="sm" 
               variant="outline"
-              onClick={() => onVisitWebsite?.(venue)}
+              onClick={() => onVisitWebsite?.(facility)}
             >
               <Globe className="h-4 w-4" />
             </Button>

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-interface VenueSEOData {
+interface FacilitySEOData {
   metaTitle: string;
   metaDescription: string;
   metaKeywords: string[];
@@ -11,7 +11,7 @@ interface VenueSEOData {
   structuredData: any;
 }
 
-interface VenueStructuredDataInput {
+interface FacilityStructuredDataInput {
   name: string;
   description?: string;
   slug: string;
@@ -25,7 +25,7 @@ interface VenueStructuredDataInput {
   priceRange?: string;
 }
 
-export function generateVenuePageMetadata(seoData: VenueSEOData): Metadata {
+export function generateFacilityPageMetadata(seoData: FacilitySEOData): Metadata {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://booksan.com';
   const canonicalUrl = `${baseUrl}${seoData.canonicalUrl}`;
 
@@ -86,17 +86,17 @@ export function generateVenuePageMetadata(seoData: VenueSEOData): Metadata {
   };
 }
 
-export function generateVenueStructuredData(data: VenueStructuredDataInput) {
+export function generateFacilityStructuredData(data: FacilityStructuredDataInput) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://booksan.com';
-  const venueUrl = `${baseUrl}/venues/${data.slug}`;
+  const facilityUrl = `${baseUrl}/facilities/${data.slug}`;
 
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'SportsActivityLocation',
-    '@id': venueUrl,
+    '@id': facilityUrl,
     name: data.name,
     description: data.description,
-    url: venueUrl,
+    url: facilityUrl,
     
     // Business information
     ...(data.address && {
@@ -146,7 +146,7 @@ export function generateVenueStructuredData(data: VenueStructuredDataInput) {
       name: 'Book a Court',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${venueUrl}#booking`,
+        urlTemplate: `${facilityUrl}#booking`,
         actionPlatform: [
           'http://schema.org/DesktopWebPlatform',
           'http://schema.org/MobileWebPlatform',
@@ -190,14 +190,14 @@ export function generateBreadcrumbStructuredData(facilityName: string, slug: str
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Venues',
-        item: `${baseUrl}/venues`,
+        name: 'Facilities',
+        item: `${baseUrl}/facilities`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: facilityName,
-        item: `${baseUrl}/venues/${slug}`,
+        item: `${baseUrl}/facilities/${slug}`,
       },
     ],
   };
@@ -232,8 +232,8 @@ export function generateSocialMetaTags(data: {
   };
 }
 
-// Generate venue-specific keywords
-export function generateVenueKeywords(data: {
+// Generate facility-specific keywords
+export function generateFacilityKeywords(data: {
   name: string;
   sports?: string[];
   location?: string;
@@ -242,7 +242,7 @@ export function generateVenueKeywords(data: {
   const baseKeywords = [
     'sports facility',
     'court booking',
-    'sports venue',
+    'sports facility',
     'vietnam sports',
     'ho chi minh sports',
     'book sports court',
@@ -255,7 +255,7 @@ export function generateVenueKeywords(data: {
     sport.toLowerCase(),
     `${sport.toLowerCase()} court`,
     `${sport.toLowerCase()} booking`,
-    `${sport.toLowerCase()} venue`,
+    `${sport.toLowerCase()} facility`,
   ]) || [];
 
   const locationKeywords = data.location ? [

@@ -18,10 +18,10 @@ export default function SearchLayout({ children }: SearchLayoutProps) {
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link
-                href="/venues/search"
+                href="/facilities/search"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                Find Venues
+                Find Facilities
               </Link>
               <a
                 href="/about"

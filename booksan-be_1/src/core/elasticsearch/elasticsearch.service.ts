@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ElasticsearchService as ESService } from '@nestjs/elasticsearch';
 import { ConfigService } from '@nestjs/config';
 
-export interface VenueSearchDocument {
+export interface FacilitySearchDocument {
   id: string;
   name: string;
   slug: string;
@@ -28,7 +28,7 @@ export interface VenueSearchDocument {
   updatedAt: string;
 }
 
-export interface SearchVenuesQuery {
+export interface SearchFacilitiesQuery {
   keyword?: string;
   lat?: number;
   lon?: number;
@@ -39,9 +39,9 @@ export interface SearchVenuesQuery {
   offset?: number;
 }
 
-export interface SearchVenuesResponse {
+export interface SearchFacilitiesResponse {
   data: Array<{
-    venue: VenueSearchDocument;
+    facility: FacilitySearchDocument;
     score: number;
     distance?: number; // in meters
   }>;
@@ -52,7 +52,7 @@ export interface SearchVenuesResponse {
 @Injectable()
 export class ElasticsearchService implements OnModuleInit {
   private readonly logger = new Logger(ElasticsearchService.name);
-  private readonly venueIndex = 'venues';
+  private readonly facilityIndex = 'facilities';
 
   constructor(
     private readonly esService: ESService,
@@ -78,14 +78,14 @@ export class ElasticsearchService implements OnModuleInit {
   private async createIndicesIfNotExists(): Promise<void> {
     try {
       const indexExists = await this.esService.indices.exists({
-        index: this.venueIndex,
+        index: this.facilityIndex,
       });
 
       if (!indexExists) {
-        await this.createVenueIndex();
-        this.logger.log(`Index "${this.venueIndex}" created successfully`);
+        await this.createFacilityIndex();
+        this.logger.log(`Index "${this.facilityIndex}" created successfully`);
       } else {
-        this.logger.log(`Index "${this.venueIndex}" already exists`);
+        this.logger.log(`Index "${this.facilityIndex}" already exists`);
       }
     } catch (error) {
       this.logger.error('Failed to create indices', error);
@@ -93,20 +93,20 @@ export class ElasticsearchService implements OnModuleInit {
     }
   }
 
-  private async createVenueIndex(): Promise<void> {
+  private async createFacilityIndex(): Promise<void> {
     const indexSettings: any = {
-      index: this.venueIndex,
+      index: this.facilityIndex,
       settings: {
         number_of_shards: 1,
         number_of_replicas: 0,
         analysis: {
           analyzer: {
-            venue_name_analyzer: {
+            facility_name_analyzer: {
               type: 'custom',
               tokenizer: 'standard',
               filter: ['lowercase', 'asciifolding', 'trim'],
             },
-            venue_address_analyzer: {
+            facility_address_analyzer: {
               type: 'custom',
               tokenizer: 'standard',
               filter: ['lowercase', 'asciifolding', 'trim'],
@@ -119,18 +119,18 @@ export class ElasticsearchService implements OnModuleInit {
           id: { type: 'keyword' },
           name: {
             type: 'text',
-            analyzer: 'venue_name_analyzer',
+            analyzer: 'facility_name_analyzer',
             fields: {
               keyword: { type: 'keyword' },
               suggest: {
                 type: 'completion',
-                analyzer: 'venue_name_analyzer',
+                analyzer: 'facility_name_analyzer',
               },
             },
           },
           address: {
             type: 'text',
-            analyzer: 'venue_address_analyzer',
+            analyzer: 'facility_address_analyzer',
             fields: {
               keyword: { type: 'keyword' },
             },
@@ -161,54 +161,56 @@ export class ElasticsearchService implements OnModuleInit {
     await this.esService.indices.create(indexSettings);
   }
 
-  async indexVenue(venue: VenueSearchDocument): Promise<void> {
+  async indexFacility(facility: FacilitySearchDocument): Promise<void> {
     try {
       await this.esService.index({
-        index: this.venueIndex,
-        id: venue.id,
-        document: venue,
+        index: this.facilityIndex,
+        id: facility.id,
+        document: facility,
         refresh: 'wait_for',
       });
-      this.logger.debug(`Venue ${venue.id} indexed successfully`);
+      this.logger.debug(`Facility ${facility.id} indexed successfully`);
     } catch (error) {
-      this.logger.error(`Failed to index venue ${venue.id}`, error);
+      this.logger.error(`Failed to index facility ${facility.id}`, error);
       throw error;
     }
   }
 
-  async updateVenue(
-    venueId: string,
-    updates: Partial<VenueSearchDocument>,
+  async updateFacility(
+    facilityId: string,
+    updates: Partial<FacilitySearchDocument>,
   ): Promise<void> {
     try {
       await this.esService.update({
-        index: this.venueIndex,
-        id: venueId,
+        index: this.facilityIndex,
+        id: facilityId,
         doc: updates,
         refresh: 'wait_for',
       });
-      this.logger.debug(`Venue ${venueId} updated successfully`);
+      this.logger.debug(`Facility ${facilityId} updated successfully`);
     } catch (error) {
-      this.logger.error(`Failed to update venue ${venueId}`, error);
+      this.logger.error(`Failed to update facility ${facilityId}`, error);
       throw error;
     }
   }
 
-  async deleteVenue(venueId: string): Promise<void> {
+  async deleteFacility(facilityId: string): Promise<void> {
     try {
       await this.esService.delete({
-        index: this.venueIndex,
-        id: venueId,
+        index: this.facilityIndex,
+        id: facilityId,
         refresh: 'wait_for',
       });
-      this.logger.debug(`Venue ${venueId} deleted successfully`);
+      this.logger.debug(`Facility ${facilityId} deleted successfully`);
     } catch (error) {
-      this.logger.error(`Failed to delete venue ${venueId}`, error);
+      this.logger.error(`Failed to delete facility ${facilityId}`, error);
       throw error;
     }
   }
 
-  async searchVenues(query: SearchVenuesQuery): Promise<SearchVenuesResponse> {
+  async searchFacilities(
+    query: SearchFacilitiesQuery,
+  ): Promise<SearchFacilitiesResponse> {
     try {
       const {
         keyword,
@@ -306,7 +308,7 @@ export class ElasticsearchService implements OnModuleInit {
       }
 
       const response = await this.esService.search({
-        index: this.venueIndex,
+        index: this.facilityIndex,
         ...searchBody,
       });
 
@@ -318,7 +320,7 @@ export class ElasticsearchService implements OnModuleInit {
       const maxScore = response.hits.max_score || 0;
 
       const data = hits.map((hit: any) => ({
-        venue: hit._source as VenueSearchDocument,
+        facility: hit._source as FacilitySearchDocument,
         score: hit._score as number,
         distance: hit.sort ? (hit.sort[0] as number) : undefined,
       }));
@@ -329,63 +331,67 @@ export class ElasticsearchService implements OnModuleInit {
         maxScore,
       };
     } catch (error) {
-      this.logger.error('Failed to search venues', error);
+      this.logger.error('Failed to search facilities', error);
       throw error;
     }
   }
 
-  async getVenueById(venueId: string): Promise<VenueSearchDocument | null> {
+  async getFacilityById(
+    facilityId: string,
+  ): Promise<FacilitySearchDocument | null> {
     try {
       const response = await this.esService.get({
-        index: this.venueIndex,
-        id: venueId,
+        index: this.facilityIndex,
+        id: facilityId,
       });
-      return response._source as VenueSearchDocument;
+      return response._source as FacilitySearchDocument;
     } catch (error) {
       if (error.meta?.statusCode === 404) {
         return null;
       }
-      this.logger.error(`Failed to get venue ${venueId}`, error);
+      this.logger.error(`Failed to get facility ${facilityId}`, error);
       throw error;
     }
   }
 
-  async reindexAllVenues(): Promise<void> {
+  async reindexAllFacilities(): Promise<void> {
     try {
-      this.logger.log('Starting venue reindexing...');
+      this.logger.log('Starting facility reindexing...');
 
       // Delete existing index
       const indexExists = await this.esService.indices.exists({
-        index: this.venueIndex,
+        index: this.facilityIndex,
       });
 
       if (indexExists) {
         await this.esService.indices.delete({
-          index: this.venueIndex,
+          index: this.facilityIndex,
         });
         this.logger.log('Existing index deleted');
       }
 
       // Create new index
-      await this.createVenueIndex();
+      await this.createFacilityIndex();
       this.logger.log('New index created');
 
-      this.logger.log('Venue reindexing completed');
+      this.logger.log('Facility reindexing completed');
     } catch (error) {
-      this.logger.error('Failed to reindex venues', error);
+      this.logger.error('Failed to reindex facilities', error);
       throw error;
     }
   }
 
-  async bulkIndexVenues(venues: VenueSearchDocument[]): Promise<void> {
+  async bulkIndexFacilities(
+    facilities: FacilitySearchDocument[],
+  ): Promise<void> {
     try {
-      if (venues.length === 0) {
+      if (facilities.length === 0) {
         return;
       }
 
-      const operations = venues.flatMap(venue => [
-        { index: { _index: this.venueIndex, _id: venue.id } },
-        venue,
+      const operations = facilities.flatMap(facility => [
+        { index: { _index: this.facilityIndex, _id: facility.id } },
+        facility,
       ]);
 
       const response = await this.esService.bulk({
@@ -398,12 +404,14 @@ export class ElasticsearchService implements OnModuleInit {
           (item: any) => item.index?.error,
         );
         this.logger.error('Bulk indexing errors:', errorItems);
-        throw new Error('Some venues failed to index');
+        throw new Error('Some facilities failed to index');
       }
 
-      this.logger.log(`Successfully bulk indexed ${venues.length} venues`);
+      this.logger.log(
+        `Successfully bulk indexed ${facilities.length} facilities`,
+      );
     } catch (error) {
-      this.logger.error('Failed to bulk index venues', error);
+      this.logger.error('Failed to bulk index facilities', error);
       throw error;
     }
   }
@@ -411,7 +419,7 @@ export class ElasticsearchService implements OnModuleInit {
   async getIndexStats(): Promise<any> {
     try {
       const response = await this.esService.indices.stats({
-        index: this.venueIndex,
+        index: this.facilityIndex,
       });
       return response;
     } catch (error) {

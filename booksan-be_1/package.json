@@ -36,10 +36,10 @@
     "docker:reset": "./docker/scripts/reset.sh",
     "docker:logs": "docker-compose logs -f",
     "docker:ps": "docker-compose ps",
-    "es:migrate:venues": "ts-node -r tsconfig-paths/register scripts/elasticsearch/migrate-venues.ts",
-    "es:reindex": "pnpm run migrate:venues --clear-index",
-    "es:validate": "pnpm run migrate:venues --validate-coords",
-    "es:test": "pnpm run migrate:venues --test-search"
+    "es:migrate:facilities": "ts-node -r tsconfig-paths/register scripts/elasticsearch/migrate-facilities.ts",
+    "es:reindex": "pnpm run migrate:facilities --clear-index",
+    "es:validate": "pnpm run migrate:facilities --validate-coords",
+    "es:test": "pnpm run migrate:facilities --test-search"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.19.1",

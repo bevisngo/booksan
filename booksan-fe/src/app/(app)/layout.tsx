@@ -23,10 +23,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 Dashboard
               </Link>
               <Link
-                href="/venues"
+                href="/facilities"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                Venues
+                Facilities
               </Link>
               <Link
                 href="/bookings"

@@ -1,4 +1,4 @@
-export interface Venue {
+export interface Facility {
   id: string
   name: string
   description: string
@@ -18,8 +18,8 @@ export interface Venue {
   rating: number
   reviewCount: number
   ownerId: string
-  owner: VenueOwner
-  hours: VenueHours[]
+  owner: FacilityOwner
+  hours: FacilityHours[]
   bookingSettings: BookingSettings
   status: 'active' | 'inactive' | 'pending'
   createdAt: string
@@ -33,7 +33,7 @@ export interface Sport {
   category: string
 }
 
-export interface VenueOwner {
+export interface FacilityOwner {
   id: string
   name: string
   email: string
@@ -41,7 +41,7 @@ export interface VenueOwner {
   avatar?: string
 }
 
-export interface VenueHours {
+export interface FacilityHours {
   dayOfWeek: number // 0-6 (Sunday-Saturday)
   openTime: string // HH:mm format
   closeTime: string // HH:mm format
@@ -57,7 +57,7 @@ export interface BookingSettings {
   allowInstantBooking: boolean
 }
 
-export interface VenueSearchFilters {
+export interface FacilitySearchFilters {
   query?: string
   location?: {
     latitude: number
@@ -82,16 +82,16 @@ export interface VenueSearchFilters {
   limit?: number
 }
 
-export interface VenueSearchResult {
-  venues: Venue[]
+export interface FacilitySearchResult {
+  facilities: Facility[]
   total: number
   page: number
   limit: number
   hasMore: boolean
-  filters: VenueSearchFilters
+  filters: FacilitySearchFilters
 }
 
-export interface CreateVenueRequest {
+export interface CreateFacilityRequest {
   name: string
   description: string
   address: string
@@ -107,15 +107,15 @@ export interface CreateVenueRequest {
     min: number
     max: number
   }
-  hours: VenueHours[]
+  hours: FacilityHours[]
   bookingSettings: BookingSettings
 }
 
-export interface UpdateVenueRequest extends Partial<CreateVenueRequest> {
+export interface UpdateFacilityRequest extends Partial<CreateFacilityRequest> {
   status?: 'active' | 'inactive'
 }
 
-export interface VenueAvailability {
+export interface FacilityAvailability {
   date: string
   timeSlots: TimeSlot[]
 }
@@ -128,9 +128,9 @@ export interface TimeSlot {
   bookingId?: string
 }
 
-export interface VenueReview {
+export interface FacilityReview {
   id: string
-  venueId: string
+  facilityId: string
   userId: string
   user: {
     name: string
@@ -149,7 +149,7 @@ export interface CreateReviewRequest {
   images?: string[]
 }
 
-export interface VenueStats {
+export interface FacilityStats {
   totalBookings: number
   totalRevenue: number
   averageRating: number

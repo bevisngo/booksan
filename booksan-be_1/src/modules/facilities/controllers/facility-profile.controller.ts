@@ -72,7 +72,7 @@ export class FacilityProfileController {
   }
 }
 
-@Controller('venues')
+@Controller('facilities')
 export class FacilityPageController {
   constructor(
     private readonly facilityProfileService: FacilityProfileService,
@@ -99,13 +99,13 @@ export class FacilityPageController {
       openGraphTitle: pageData.openGraphTitle,
       openGraphDescription: pageData.openGraphDesc,
       openGraphImage: pageData.openGraphImage,
-      canonicalUrl: `/venues/${slug}`,
+      canonicalUrl: `/facilities/${slug}`,
       structuredData: {
         '@context': 'https://schema.org',
         '@type': 'SportsActivityLocation',
         name: pageData.facilityName,
         description: pageData.facilityDescription,
-        url: `/venues/${slug}`,
+        url: `/facilities/${slug}`,
       },
     };
   }

@@ -1,5 +1,5 @@
-export { VenueCard } from './VenueCard'
+export { FacilityCard } from './FacilityCard'
 export { SearchFilters } from './SearchFilters'
 export { LocationPermissionBanner } from './LocationPermissionBanner'
 export { SearchHeader } from './SearchHeader'
-export { VenueList } from './VenueList'
+export { FacilityList } from './FacilityList'

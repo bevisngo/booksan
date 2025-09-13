@@ -38,7 +38,7 @@ export enum SortOrder {
 }
 
 // Search parameters matching the backend DTO
-export interface SearchVenuesParams {
+export interface SearchFacilitiesParams {
   keyword?: string
   lat?: number
   lon?: number
@@ -53,7 +53,7 @@ export interface SearchVenuesParams {
 
 // Search result item interface
 export interface SearchResultItem {
-  venue: Venue
+  facility: Facility
   score: number
 }
 
@@ -65,7 +65,7 @@ export interface SearchMeta {
 }
 
 // Search result interface matching API response
-export interface SearchVenuesResponse {
+export interface SearchFacilitiesResponse {
   data: SearchResultItem[]
   maxScore: number
   meta: SearchMeta
@@ -73,7 +73,7 @@ export interface SearchVenuesResponse {
   nextCursor?: string
 }
 
-// Court interface for venue courts
+// Court interface for facility courts
 export interface Court {
   id: string
   name: string
@@ -82,21 +82,21 @@ export interface Court {
   isActive: boolean
 }
 
-// Location interface for venue coordinates
-export interface VenueLocation {
+// Location interface for facility coordinates
+export interface FacilityLocation {
   lat: number
   lon: number
 }
 
-// Venue interface matching API response
-export interface Venue {
+// Facility interface matching API response
+export interface Facility {
   id: string
   name: string
   address: string
   courts: Court[]
   createdAt: string
   isPublished: boolean
-  location: VenueLocation
+  location: FacilityLocation
   ownerId: string
   updatedAt: string
   // Optional fields that might be added later
@@ -156,8 +156,8 @@ export interface ServerActionResult<T> {
   error?: string
 }
 
-export interface VenueSearchResult {
-  venues: Venue[]
+export interface FacilitySearchResult {
+  facilities: Facility[]
   total: number
   nextCursor?: string
   hasMore: boolean

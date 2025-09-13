@@ -16,7 +16,7 @@ export default function HomePage() {
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Find & Book <span className="text-gradient">Sports Venues</span>{" "}
+            Find & Book <span className="text-gradient">Sports Facilities</span>{" "}
             Near You
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -25,12 +25,12 @@ export default function HomePage() {
             we have it all.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/venues/search">
-              <Button size="lg">Find Venues</Button>
+            <Link href="/facilities/search">
+              <Button size="lg">Find Facilities</Button>
             </Link>
             <Link href="/auth/signup">
               <Button variant="outline" size="lg">
-                List Your Venue
+                List Your Facility
               </Button>
             </Link>
           </div>
@@ -45,7 +45,7 @@ export default function HomePage() {
               Why Choose Booksan?
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              We make it easy to find, book, and enjoy sports venues in your
+              We make it easy to find, book, and enjoy sports facilities in your
               area.
             </p>
           </div>
@@ -59,7 +59,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Find venues by location, sport, price, and availability. Our
+                  Find facilities by location, sport, price, and availability. Our
                   smart search helps you discover the perfect place to play.
                 </CardDescription>
               </CardContent>
@@ -73,7 +73,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Book venues instantly with our streamlined booking process. No
+                  Book facilities instantly with our streamlined booking process. No
                   more phone calls or waiting for confirmations.
                 </CardDescription>
               </CardContent>
@@ -87,7 +87,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  All venues are verified and rated by our community. Read
+                  All facilities are verified and rated by our community. Read
                   reviews and see photos before you book.
                 </CardDescription>
               </CardContent>
@@ -104,7 +104,7 @@ export default function HomePage() {
               Popular Sports
             </h2>
             <p className="text-xl text-muted-foreground">
-              Find venues for all your favorite sports and activities.
+              Find facilities for all your favorite sports and activities.
             </p>
           </div>
 
@@ -139,7 +139,7 @@ export default function HomePage() {
           </h2>
           <p className="text-xl mb-8 opacity-90">
             Join thousands of players who use Booksan to find and book amazing
-            sports venues.
+            sports facilities.
           </p>
           <a href="/auth/signup">
             <Button size="lg" variant="secondary">

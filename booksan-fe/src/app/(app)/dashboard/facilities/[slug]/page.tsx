@@ -4,12 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/lib/fetcher';
-import { TemplateSelectionGrid } from '@/components/venue/TemplateSelectionGrid';
-import { FacilityProfileEditor } from '@/components/venue/FacilityProfileEditor';
+import { TemplateSelectionGrid } from '@/components/facility/TemplateSelectionGrid';
+import { FacilityProfileEditor } from '@/components/facility/FacilityProfileEditor';
 import { ExternalLink, Eye, Settings } from 'lucide-react';
 import Link from 'next/link';
 
-interface VenueManagePageProps {
+interface FacilityManagePageProps {
   params: Promise<{
     slug: string;
   }>;
@@ -58,7 +58,7 @@ interface FacilityPageTemplate {
 async function getFacilityProfile(slug: string): Promise<FacilityProfile | null> {
   try {
     // First get facility by slug
-    const facility = await api.get<{ id: string; name: string; slug: string }>(`/venues/${slug}`);
+    const facility = await api.get<{ id: string; name: string; slug: string }>(`/facilities/${slug}`);
     if (!facility) return null;
 
     // Then get its profile
@@ -88,24 +88,24 @@ async function getAvailableTemplates(): Promise<FacilityPageTemplate[]> {
 
 export async function generateMetadata({
   params,
-}: VenueManagePageProps): Promise<Metadata> {
+}: FacilityManagePageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const profile = await getFacilityProfile(resolvedParams.slug);
   
   if (!profile) {
     return {
-      title: 'Venue Not Found - Booksan Dashboard',
+      title: 'Facility Not Found - Booksan Dashboard',
     };
   }
 
   return {
     title: `Manage ${profile.facility.name} - Booksan Dashboard`,
-    description: `Manage the venue page for ${profile.facility.name}. Customize templates, edit content, and optimize SEO.`,
+    description: `Manage the facility page for ${profile.facility.name}. Customize templates, edit content, and optimize SEO.`,
     robots: 'noindex,nofollow', // Dashboard pages shouldn't be indexed
   };
 }
 
-export default async function VenueManagePage({ params }: VenueManagePageProps) {
+export default async function FacilityManagePage({ params }: FacilityManagePageProps) {
   const resolvedParams = await params;
   const [profile, templates] = await Promise.all([
     getFacilityProfile(resolvedParams.slug),
@@ -126,7 +126,7 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
           <div>
             <h1 className="text-3xl font-bold">{facility.name}</h1>
             <p className="text-muted-foreground mt-1">
-              Manage your venue page and customize how customers see your facility
+              Manage your facility page and customize how customers see your facility
             </p>
           </div>
           
@@ -137,7 +137,7 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
             
             <Button variant="outline" asChild>
               <Link
-                href={`/venues/${facility.slug}`}
+                href={`/facilities/${facility.slug}`}
                 target="_blank"
                 className="flex items-center gap-2"
               >
@@ -148,7 +148,7 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
             
             <Button variant="outline" asChild>
               <Link
-                href={`/venues/${facility.slug}`}
+                href={`/facilities/${facility.slug}`}
                 target="_blank"
                 className="flex items-center gap-2"
               >
@@ -167,7 +167,7 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
               Current Page Status
             </CardTitle>
             <CardDescription>
-              Overview of your venue page configuration
+              Overview of your facility page configuration
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -203,19 +203,19 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
             <div className="pt-4 border-t">
               <div className="flex items-center gap-4">
                 <Button asChild>
-                  <Link href={`/dashboard/venues/${facility.slug}/edit`}>
+                  <Link href={`/dashboard/facilities/${facility.slug}/edit`}>
                     Edit Page Content
                   </Link>
                 </Button>
                 
                 <Button variant="outline" asChild>
-                  <Link href={`/dashboard/venues/${facility.slug}/seo`}>
+                  <Link href={`/dashboard/facilities/${facility.slug}/seo`}>
                     Optimize SEO
                   </Link>
                 </Button>
                 
                 <Button variant="outline" asChild>
-                  <Link href={`/dashboard/venues/${facility.slug}/analytics`}>
+                  <Link href={`/dashboard/facilities/${facility.slug}/analytics`}>
                     View Analytics
                   </Link>
                 </Button>
@@ -230,7 +230,7 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
             <CardHeader>
               <CardTitle>Choose a Template</CardTitle>
               <CardDescription>
-                Select a professional template for your venue page. You can customize it later or create your own design.
+                Select a professional template for your facility page. You can customize it later or create your own design.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -252,7 +252,7 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
           <CardHeader>
             <CardTitle>Quick Edit</CardTitle>
             <CardDescription>
-              Make quick changes to your venue page content and SEO settings
+              Make quick changes to your facility page content and SEO settings
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -271,7 +271,7 @@ export default async function VenueManagePage({ params }: VenueManagePageProps) 
           <CardHeader>
             <CardTitle>Page Performance</CardTitle>
             <CardDescription>
-              Tips to improve your venue page visibility and booking conversion
+              Tips to improve your facility page visibility and booking conversion
             </CardDescription>
           </CardHeader>
           <CardContent>

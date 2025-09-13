@@ -159,7 +159,7 @@ export function FacilityProfileEditor({ profile, onSave }: FacilityProfileEditor
                 <div>
                   <CardTitle>Search Engine Optimization</CardTitle>
                   <CardDescription>
-                    Optimize your venue page for search engines to attract more customers
+                    Optimize your facility page for search engines to attract more customers
                   </CardDescription>
                 </div>
                 <Button
@@ -213,7 +213,7 @@ export function FacilityProfileEditor({ profile, onSave }: FacilityProfileEditor
                 <Input
                   id="metaKeywords"
                   {...form.register('metaKeywords')}
-                  placeholder="sports, tennis, booking, venue (comma-separated)"
+                  placeholder="sports, tennis, booking, facility (comma-separated)"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
                   Separate keywords with commas
@@ -228,7 +228,7 @@ export function FacilityProfileEditor({ profile, onSave }: FacilityProfileEditor
                     {form.watch('metaTitle') || 'Your Page Title'}
                   </div>
                   <div className="text-green-700 text-sm">
-                    booksan.com/venues/{profile.facility.slug}
+                    booksan.com/facilities/{profile.facility.slug}
                   </div>
                   <div className="text-gray-600 text-sm">
                     {form.watch('metaDescription') || 'Your page description will appear here...'}
@@ -244,7 +244,7 @@ export function FacilityProfileEditor({ profile, onSave }: FacilityProfileEditor
             <CardHeader>
               <CardTitle>Social Media Sharing</CardTitle>
               <CardDescription>
-                Customize how your venue page appears when shared on social media
+                Customize how your facility page appears when shared on social media
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -315,7 +315,7 @@ export function FacilityProfileEditor({ profile, onSave }: FacilityProfileEditor
               <CardHeader>
                 <CardTitle>Custom HTML & CSS</CardTitle>
                 <CardDescription>
-                  Advanced customization for your venue page. Use with caution.
+                  Advanced customization for your facility page. Use with caution.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -373,7 +373,7 @@ export function FacilityProfileEditor({ profile, onSave }: FacilityProfileEditor
             asChild
           >
             <a
-              href={`/venues/${profile.facility.slug}`}
+              href={`/facilities/${profile.facility.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"

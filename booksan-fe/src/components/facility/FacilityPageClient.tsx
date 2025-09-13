@@ -131,7 +131,7 @@ export function FacilityPageClient({
   }, [pageData.css, slug]);
 
   if (!sanitizedHTML) {
-    return <DefaultVenuePage pageData={pageData} slug={slug} />;
+    return <DefaultFacilityPage pageData={pageData} slug={slug} />;
   }
 
   return (
@@ -227,7 +227,7 @@ function FacilityToolbar({
               asChild
               className="flex items-center gap-2"
             >
-              <Link href={`/dashboard/venues/${slug}/edit`}>
+              <Link href={`/dashboard/facilities/${slug}/edit`}>
                 <Edit3 className="h-4 w-4" />
                 Edit Page
               </Link>
@@ -239,7 +239,7 @@ function FacilityToolbar({
               asChild
               className="flex items-center gap-2"
             >
-              <Link href={`/venues/${slug}?preview=true`} target="_blank">
+              <Link href={`/facilities/${slug}?preview=true`} target="_blank">
                 <ExternalLink className="h-4 w-4" />
                 Open in New Tab
               </Link>
@@ -328,7 +328,7 @@ function BookingIntegrationOverlay() {
   );
 }
 
-function DefaultVenuePage({ pageData, slug }: { pageData: FacilityPageData; slug: string }) {
+function DefaultFacilityPage({ pageData, slug }: { pageData: FacilityPageData; slug: string }) {
   return (
     <div className="min-h-screen bg-background">
       {/* Admin/Owner toolbar */}
@@ -340,7 +340,7 @@ function DefaultVenuePage({ pageData, slug }: { pageData: FacilityPageData; slug
         isPreviewMode={false}
       />
 
-      {/* Default venue content */}
+      {/* Default facility content */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Hero Section */}
@@ -369,10 +369,10 @@ function DefaultVenuePage({ pageData, slug }: { pageData: FacilityPageData; slug
             <div className="lg:col-span-2 space-y-8">
               {/* About Section */}
               <Card className="p-6">
-                <h2 className="text-2xl font-semibold mb-4">About This Venue</h2>
+                <h2 className="text-2xl font-semibold mb-4">About This Facility</h2>
                 <p className="text-gray-600 leading-relaxed">
                   {pageData.facilityDescription || 
-                    `Welcome to ${pageData.facilityName}! We provide excellent sports facilities for your recreational and competitive needs. Our venue is equipped with modern amenities and professional-grade equipment to ensure the best experience for all our visitors.`
+                    `Welcome to ${pageData.facilityName}! We provide excellent sports facilities for your recreational and competitive needs. Our facility is equipped with modern amenities and professional-grade equipment to ensure the best experience for all our visitors.`
                   }
                 </p>
               </Card>
@@ -452,11 +452,11 @@ function DefaultVenuePage({ pageData, slug }: { pageData: FacilityPageData; slug
                 <div className="space-y-3">
                   <div>
                     <span className="text-gray-600 block">Address:</span>
-                    <span className="text-sm">Check venue details for address</span>
+                    <span className="text-sm">Check facility details for address</span>
                   </div>
                   <div>
                     <span className="text-gray-600 block">Phone:</span>
-                    <span className="text-sm">Contact venue for phone number</span>
+                    <span className="text-sm">Contact facility for phone number</span>
                   </div>
                   <Button variant="outline" size="sm" className="w-full">
                     Get Directions
@@ -482,7 +482,7 @@ function DefaultVenuePage({ pageData, slug }: { pageData: FacilityPageData; slug
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3">
-                  *Hours may vary. Please confirm with venue.
+                  *Hours may vary. Please confirm with facility.
                 </p>
               </Card>
             </div>

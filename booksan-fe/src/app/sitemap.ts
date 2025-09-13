@@ -1,21 +1,21 @@
 import { MetadataRoute } from 'next';
 import { api } from '@/lib/fetcher';
 
-interface VenueSitemapData {
+interface FacilitySitemapData {
   slug: string;
   updatedAt: string;
   isPublished: boolean;
 }
 
-async function getVenuesSitemapData(): Promise<VenueSitemapData[]> {
+async function getFacilitiesSitemapData(): Promise<FacilitySitemapData[]> {
   try {
-    // This would be a new endpoint to get venue sitemap data
-    const venues = await api.get<VenueSitemapData[]>('/venues/sitemap', {
+    // This would be a new endpoint to get facility sitemap data
+    const facilities = await api.get<FacilitySitemapData[]>('/facilities/sitemap', {
       revalidate: 3600, // Cache for 1 hour
     });
-    return venues.filter(venue => venue.isPublished);
+    return facilities.filter(facility => facility.isPublished);
   } catch (error) {
-    console.error('Failed to fetch venues for sitemap:', error);
+    console.error('Failed to fetch facilities for sitemap:', error);
     return [];
   }
 }
@@ -23,8 +23,8 @@ async function getVenuesSitemapData(): Promise<VenueSitemapData[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://booksan.com';
   
-  // Get dynamic venue pages
-  const venues = await getVenuesSitemapData();
+  // Get dynamic facility pages
+  const facilities = await getFacilitiesSitemapData();
   
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
@@ -35,13 +35,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${baseUrl}/venues`,
+      url: `${baseUrl}/facilities`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/venues/search`,
+      url: `${baseUrl}/facilities/search`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
@@ -60,13 +60,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic venue pages
-  const venuePages: MetadataRoute.Sitemap = venues.map((venue) => ({
-    url: `${baseUrl}/venues/${venue.slug}`,
-    lastModified: new Date(venue.updatedAt),
+  // Dynamic facility pages
+  const facilityPages: MetadataRoute.Sitemap = facilities.map((facility) => ({
+    url: `${baseUrl}/facilities/${facility.slug}`,
+    lastModified: new Date(facility.updatedAt),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }));
 
-  return [...staticPages, ...venuePages];
+  return [...staticPages, ...facilityPages];
 }

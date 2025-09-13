@@ -8,7 +8,7 @@ export default function SignupPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">Create your account</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Join Booksan and start booking venues
+            Join Booksan and start booking facilities
           </p>
         </div>
         
