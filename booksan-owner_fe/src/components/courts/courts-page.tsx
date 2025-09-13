@@ -73,7 +73,7 @@ export function CourtsPage({}: CourtsPageProps) {
     try {
       await updateCourt(editingCourt.id, data);
       setEditingCourt(null);
-      refetch();
+      refetch({});
       toast({
         title: 'Success',
         description: 'Court updated successfully',
@@ -90,7 +90,7 @@ export function CourtsPage({}: CourtsPageProps) {
   const handleCourtDeleted = async (id: string) => {
     try {
       await deleteCourt(id);
-      refetch();
+      refetch({});
       toast({
         title: 'Success',
         description: 'Court deleted successfully',
@@ -111,7 +111,7 @@ export function CourtsPage({}: CourtsPageProps) {
       } else {
         await deactivateCourt(id);
       }
-      refetch();
+      refetch({});
       toast({
         title: 'Success',
         description: `Court ${isActive ? 'activated' : 'deactivated'} successfully`,
@@ -141,7 +141,7 @@ export function CourtsPage({}: CourtsPageProps) {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-destructive mb-4">Failed to load courts: {error.message}</p>
-              <Button onClick={refetch}>Try Again</Button>
+              <Button onClick={() => refetch({})}>Try Again</Button>
             </div>
           </CardContent>
         </Card>

@@ -64,8 +64,8 @@ export interface BookingFilters {
   search?: string; // Search in player name, email, phone, booking code
   courtId?: string;
   status?: BookingStatus | 'all';
-  dateFrom?: string;
-  dateTo?: string;
+  startDate?: string;
+  endDate?: string;
   page?: number;
   limit?: number;
 }

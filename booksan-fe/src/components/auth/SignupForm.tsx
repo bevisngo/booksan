@@ -7,19 +7,28 @@ import { SignupRequest } from "@/features/auth/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface SignupFormProps {
   onSuccess?: () => void;
   redirectTo?: string;
 }
 
-export function SignupForm({ onSuccess, redirectTo = "/dashboard" }: SignupFormProps) {
+export function SignupForm({
+  onSuccess,
+  redirectTo = "/dashboard",
+}: SignupFormProps) {
   const router = useRouter();
   const { signup, isLoading } = useAuth();
   const [formData, setFormData] = useState<SignupRequest>({
     fullname: "",
-    email: "",
+    phone: "",
     password: "",
     passwordConfirm: "",
   });
@@ -28,7 +37,7 @@ export function SignupForm({ onSuccess, redirectTo = "/dashboard" }: SignupFormP
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -59,18 +68,26 @@ export function SignupForm({ onSuccess, redirectTo = "/dashboard" }: SignupFormP
       onSuccess?.();
       router.push(redirectTo);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed. Please try again.");
+      setError(
+        err instanceof Error ? err.message : "Signup failed. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const isFormValid = formData.fullname && formData.email && formData.password && formData.passwordConfirm;
+  const isFormValid =
+    formData.fullname &&
+    formData.phone &&
+    formData.password &&
+    formData.passwordConfirm;
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">
+          Create Account
+        </CardTitle>
         <CardDescription className="text-center">
           Enter your information to create your account
         </CardDescription>
@@ -97,14 +114,15 @@ export function SignupForm({ onSuccess, redirectTo = "/dashboard" }: SignupFormP
             />
           </div>
 
+          {/* Phone Number */}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="phone">Phone Number</Label>
             <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              value={formData.email}
+              id="phone"
+              name="phone"
+              type="text"
+              placeholder="Enter your phone number"
+              value={formData.phone}
               onChange={handleInputChange}
               required
               disabled={isSubmitting}
@@ -151,7 +169,9 @@ export function SignupForm({ onSuccess, redirectTo = "/dashboard" }: SignupFormP
         </form>
 
         <div className="mt-4 text-center text-sm">
-          <span className="text-muted-foreground">Already have an account? </span>
+          <span className="text-muted-foreground">
+            Already have an account?{" "}
+          </span>
           <Button
             variant="link"
             className="p-0 h-auto font-normal"

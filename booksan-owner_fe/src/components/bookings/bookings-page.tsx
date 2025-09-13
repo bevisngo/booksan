@@ -6,7 +6,13 @@ import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -17,7 +23,6 @@ import {
 import { BookingCard } from '@/components/bookings/booking-card';
 import { CreateBookingDialog } from '@/components/bookings/create-booking-dialog';
 import { useBookings } from '@/hooks/use-bookings';
-import { useFacilities } from '@/hooks/use-facilities';
 import { BookingFilters, BOOKING_STATUSES } from '@/types/booking';
 import { debounce } from '@/lib/utils';
 import { bookingApi } from '@/lib/api/bookings';
@@ -29,23 +34,23 @@ export function BookingsPage() {
     search: '',
     status: 'all',
     courtId: '',
-    dateFrom: format(new Date(), 'yyyy-MM-dd'),
-    dateTo: '',
+    startDate: format(new Date(), 'yyyy-MM-dd'),
+    endDate: '',
     page: 1,
     limit: 12,
   });
-  
+
   const [showCreateDialog, setShowCreateDialog] = React.useState(false);
   const [isExporting, setIsExporting] = React.useState(false);
-  
+
   const { bookings, loading, error, refetch } = useBookings(filters);
-  const { facilities } = useFacilities({ limit: 100 }); // Get all facilities for filter
 
   // Debounced search
   const debouncedSetSearch = React.useMemo(
-    () => debounce((search: string) => {
-      setFilters(prev => ({ ...prev, search, page: 1 }));
-    }, 300),
+    () =>
+      debounce((search: string) => {
+        setFilters(prev => ({ ...prev, search, page: 1 }));
+      }, 300),
     []
   );
 
@@ -54,7 +59,11 @@ export function BookingsPage() {
   };
 
   const handleFilterChange = (key: keyof BookingFilters, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value === 'all' ? undefined : value, page: 1 }));
+    setFilters(prev => ({
+      ...prev,
+      [key]: value === 'all' ? undefined : value,
+      page: 1,
+    }));
   };
 
   const handleBookingCreated = () => {
@@ -70,7 +79,7 @@ export function BookingsPage() {
     try {
       setIsExporting(true);
       const blob = await bookingApi.exportBookingsCSV(filters);
-      
+
       // Create download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -107,11 +116,13 @@ export function BookingsPage() {
             </p>
           </div>
         </div>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-destructive mb-4">Failed to load bookings: {error.message}</p>
+              <p className="text-destructive mb-4">
+                Failed to load bookings: {error.message}
+              </p>
               <Button onClick={refetch}>Try Again</Button>
             </div>
           </CardContent>
@@ -161,59 +172,73 @@ export function BookingsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search bookings..."
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onChange={e => handleSearchChange(e.target.value)}
                 className="pl-10"
               />
             </div>
-            
+
             {/* Court Filter */}
             <Select
               value={filters.courtId || 'all'}
-              onValueChange={(value) => handleFilterChange('courtId', value)}
+              onValueChange={value => handleFilterChange('courtId', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Courts" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Courts</SelectItem>
-                {facilities?.data.flatMap(facility => facility.courts || []).map((court) => (
-                  <SelectItem key={court.id} value={court.id}>
-                    {court.name}
-                  </SelectItem>
-                ))}
+                {/* {facilities?.data
+                  .flatMap(facility => facility.courts || [])
+                  .map(court => (
+                    <SelectItem key={court.id} value={court.id}>
+                      {court.name}
+                    </SelectItem>
+                  ))} */}
               </SelectContent>
             </Select>
-            
+
             {/* Status Filter */}
             <Select
               value={filters.status?.toString() || 'all'}
-              onValueChange={(value) => handleFilterChange('status', value)}
+              onValueChange={value => handleFilterChange('status', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                {BOOKING_STATUSES.map((status) => (
+                {BOOKING_STATUSES.map(status => (
                   <SelectItem key={status.value} value={status.value}>
                     {status.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            
+
             {/* Date From */}
             <Input
               type="date"
-              value={filters.dateFrom || ''}
-              onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value, page: 1 }))}
+              value={filters.startDate || ''}
+              onChange={e =>
+                setFilters(prev => ({
+                  ...prev,
+                  startDate: e.target.value,
+                  page: 1,
+                }))
+              }
             />
-            
+
             {/* Date To */}
             <Input
               type="date"
-              value={filters.dateTo || ''}
-              onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value, page: 1 }))}
+              value={filters.endDate || ''}
+              onChange={e =>
+                setFilters(prev => ({
+                  ...prev,
+                  endDate: e.target.value,
+                  page: 1,
+                }))
+              }
             />
           </div>
         </CardContent>
@@ -241,25 +266,33 @@ export function BookingsPage() {
               <Calendar className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">No bookings found</h3>
               <p className="mt-2 text-muted-foreground">
-                {filters.search || filters.status !== 'all' || filters.courtId || filters.dateFrom || filters.dateTo
+                {filters.search ||
+                filters.status !== 'all' ||
+                filters.courtId ||
+                filters.startDate ||
+                filters.endDate
                   ? 'No bookings match your current filters. Try adjusting your search criteria.'
                   : 'No bookings have been created yet.'}
               </p>
-              {(!filters.search && filters.status === 'all' && !filters.courtId && !filters.dateFrom && !filters.dateTo) && (
-                <Button
-                  onClick={() => setShowCreateDialog(true)}
-                  className="mt-4"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Your First Booking
-                </Button>
-              )}
+              {!filters.search &&
+                filters.status === 'all' &&
+                !filters.courtId &&
+                !filters.startDate &&
+                !filters.endDate && (
+                  <Button
+                    onClick={() => setShowCreateDialog(true)}
+                    className="mt-4"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Your First Booking
+                  </Button>
+                )}
             </div>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookings.map((booking) => (
+          {bookings.map(booking => (
             <BookingCard
               key={booking.id}
               booking={booking}

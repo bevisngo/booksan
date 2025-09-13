@@ -9,7 +9,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
   Put,
   UseGuards,
@@ -54,7 +53,7 @@ export class OwnerCourtController {
 
   @Get(':id')
   async getCourtById(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @CurrentUser() user: OwnerProfile,
   ): Promise<CourtWithFacilityResponseDto> {
     const facilityId = user.facilityId;
@@ -77,7 +76,7 @@ export class OwnerCourtController {
 
   @Put(':id')
   async updateCourt(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Body() updateCourtDto: UpdateCourtDto,
     @CurrentUser() user: OwnerProfile,
   ): Promise<CourtResponseDto> {
@@ -88,7 +87,7 @@ export class OwnerCourtController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteCourt(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @CurrentUser() user: OwnerProfile,
   ): Promise<void> {
     // TODO: Add ownership validation
@@ -97,7 +96,7 @@ export class OwnerCourtController {
 
   @Put(':id/activate')
   async activateCourt(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @CurrentUser() user: OwnerProfile,
   ): Promise<CourtResponseDto> {
     // TODO: Add ownership validation
@@ -106,7 +105,7 @@ export class OwnerCourtController {
 
   @Put(':id/deactivate')
   async deactivateCourt(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @CurrentUser() user: OwnerProfile,
   ): Promise<CourtResponseDto> {
     // TODO: Add ownership validation
@@ -115,7 +114,7 @@ export class OwnerCourtController {
 
   @Get('facility/:facilityId/stats')
   async getCourtStats(
-    @Param('facilityId', ParseUUIDPipe) facilityId: string,
+    @Param('facilityId') facilityId: string,
     @CurrentUser() user: OwnerProfile,
   ): Promise<{
     total: number;

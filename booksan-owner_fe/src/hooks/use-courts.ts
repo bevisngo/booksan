@@ -14,12 +14,12 @@ export function useCourts(filters: FacilityFilters = {}) {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | null>(null);
 
-  const fetchCourts = React.useCallback(async () => {
+  const fetchCourts = React.useCallback(async (courtFilters: FacilityFilters) => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Fetching courts with filters:', filters);
-      const result = await courtApi.getCourts(filters);
+      console.log('Fetching courts with filters:', courtFilters);
+      const result = await courtApi.getCourts(courtFilters);
       console.log('Courts fetched successfully:', result);
       setCourts(result);
     } catch (err) {
@@ -28,11 +28,11 @@ export function useCourts(filters: FacilityFilters = {}) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, []); // Remove filters dependency
 
   React.useEffect(() => {
-    fetchCourts();
-  }, [fetchCourts]);
+    fetchCourts(filters);
+  }, [filters, fetchCourts]);
 
   return {
     courts,
@@ -47,30 +47,38 @@ export function useCourt(id: string) {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | null>(null);
 
-  const fetchCourt = React.useCallback(async () => {
-    if (!id) return;
+  const fetchCourt = React.useCallback(async (courtId: string) => {
+    if (!courtId) return;
 
     try {
       setLoading(true);
       setError(null);
-      const result = await courtApi.getCourt(id);
+      const result = await courtApi.getCourt(courtId);
       setCourt(result);
     } catch (err) {
       setError(err as Error);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, []);
 
   React.useEffect(() => {
-    fetchCourt();
-  }, [fetchCourt]);
+    if (id) {
+      fetchCourt(id);
+    }
+  }, [id, fetchCourt]);
+
+  const refetch = React.useCallback(() => {
+    if (id) {
+      return fetchCourt(id);
+    }
+  }, [id, fetchCourt]);
 
   return {
     court,
     loading,
     error,
-    refetch: fetchCourt,
+    refetch,
   };
 }
 

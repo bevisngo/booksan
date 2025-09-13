@@ -22,11 +22,11 @@ export function useBookings(filters: BookingFilters = {}) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, []); // Remove filters dependency to prevent recreation
 
   React.useEffect(() => {
-    fetchBookings();
-  }, [fetchBookings]);
+    fetchBookings(filters);
+  }, [filters, fetchBookings]);
 
   const getBooking = React.useCallback((bookingId: string) => {
     return bookings.find(b => b.id === bookingId);

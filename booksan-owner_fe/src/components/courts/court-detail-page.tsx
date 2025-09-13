@@ -6,7 +6,7 @@ import { ArrowLeft, Edit, Plus, Activity, Calendar, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useCourts, useCourtMutations } from '@/hooks/use-courts';
+import { useCourts, useCourtMutations, useCourt } from '@/hooks/use-courts';
 import { CourtBookingsTab } from './court-bookings-tab';
 import { CourtInformationTab } from './court-information-tab';
 import { CreateBookingDialog } from '../bookings/create-booking-dialog';
@@ -19,12 +19,10 @@ interface CourtDetailPageProps {
 
 export function CourtDetailPage({ courtId }: CourtDetailPageProps) {
   const router = useRouter();
-  const { courts } = useCourts();
+  const { court } = useCourt(courtId);
   const { updateCourt } = useCourtMutations();
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
   const [showCreateBooking, setShowCreateBooking] = useState(false);
-
-  const court = courts.find(c => c.id === courtId);
 
   if (!court) {
     return (
@@ -39,14 +37,14 @@ export function CourtDetailPage({ courtId }: CourtDetailPageProps) {
       id: 'bookings' as TabType,
       label: 'Bookings',
       icon: Calendar,
-      description: 'Manage court bookings and schedule'
+      description: 'Manage court bookings and schedule',
     },
     {
       id: 'information' as TabType,
       label: 'Information',
       icon: Info,
-      description: 'View and edit court details'
-    }
+      description: 'View and edit court details',
+    },
   ];
 
   return (
@@ -94,7 +92,7 @@ export function CourtDetailPage({ courtId }: CourtDetailPageProps) {
       {/* Tab Navigation */}
       <Card className="p-1">
         <div className="flex space-x-1">
-          {tabs.map((tab) => {
+          {tabs.map(tab => {
             const Icon = tab.icon;
             return (
               <button
@@ -122,18 +120,18 @@ export function CourtDetailPage({ courtId }: CourtDetailPageProps) {
             onCreateBooking={() => setShowCreateBooking(true)}
           />
         )}
-        {activeTab === 'information' && (
-          <CourtInformationTab court={court} updateCourt={updateCourt} courts={courts} />
-        )}
+        {/* {activeTab === 'information' && (
+          <CourtInformationTab court={court} updateCourt={updateCourt} />
+        )} */}
       </div>
 
       {/* Create Booking Dialog */}
-      <CreateBookingDialog
+      {/* <CreateBookingDialog
         isOpen={showCreateBooking}
         onClose={() => setShowCreateBooking(false)}
         courtId={courtId}
         preselectedCourt={court}
-      />
+      /> */}
     </div>
   );
 }

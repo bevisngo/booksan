@@ -34,19 +34,25 @@ import { bookingApi } from '@/lib/api/bookings';
 import { useFacilities } from '@/hooks/use-facilities';
 import type { CreateBookingData, PriceSimulation } from '@/types/booking';
 
-const bookingSchema = z.object({
-  courtId: z.string().min(1, 'Court is required'),
-  playerName: z.string().min(1, 'Player name is required'),
-  playerEmail: z.string().email('Invalid email').optional().or(z.literal('')),
-  playerPhone: z.string().min(10, 'Phone number must be at least 10 characters').optional().or(z.literal('')),
-  date: z.string().min(1, 'Date is required'),
-  startTime: z.string().min(1, 'Start time is required'),
-  duration: z.number().min(15, 'Duration must be at least 15 minutes'),
-  notes: z.string().optional(),
-}).refine((data) => data.playerEmail || data.playerPhone, {
-  message: 'Either email or phone is required',
-  path: ['playerEmail'],
-});
+const bookingSchema = z
+  .object({
+    courtId: z.string().min(1, 'Court is required'),
+    playerName: z.string().min(1, 'Player name is required'),
+    playerEmail: z.string().email('Invalid email').optional().or(z.literal('')),
+    playerPhone: z
+      .string()
+      .min(10, 'Phone number must be at least 10 characters')
+      .optional()
+      .or(z.literal('')),
+    date: z.string().min(1, 'Date is required'),
+    startTime: z.string().min(1, 'Start time is required'),
+    duration: z.number().min(15, 'Duration must be at least 15 minutes'),
+    notes: z.string().optional(),
+  })
+  .refine(data => data.playerEmail || data.playerPhone, {
+    message: 'Either email or phone is required',
+    path: ['playerEmail'],
+  });
 
 type BookingFormData = z.infer<typeof bookingSchema>;
 
@@ -74,17 +80,17 @@ export function CreateBookingDialog({
   initialTime,
 }: CreateBookingDialogProps) {
   const isDialogOpen = open ?? isOpen ?? false;
-  const handleOpenChange = onOpenChange ?? ((open: boolean) => !open && onClose?.());
+  const handleOpenChange =
+    onOpenChange ?? ((open: boolean) => !open && onClose?.());
   const handleSuccess = () => {
     onSuccess?.();
     handleOpenChange(false);
   };
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [priceSimulation, setPriceSimulation] = React.useState<PriceSimulation | null>(null);
+  const [priceSimulation, setPriceSimulation] =
+    React.useState<PriceSimulation | null>(null);
   const [isSimulating, setIsSimulating] = React.useState(false);
-
-  const { facilities } = useFacilities({ limit: 100 });
 
   const {
     register,
@@ -108,16 +114,12 @@ export function CreateBookingDialog({
   const startTime = watch('startTime');
   const duration = watch('duration');
 
-  // Get selected court info
-  const selectedCourt = facilities?.data
-    .flatMap(facility => facility.courts || [])
-    .find(court => court.id === courtId);
-
   // Duration options based on selected court's slot length
   const getDurationOptions = () => {
-    if (!selectedCourt) return [30, 60, 90, 120];
-    const slotLength = selectedCourt.slotMinutes;
-    return Array.from({ length: 8 }, (_, i) => slotLength * (i + 1));
+    return [30, 60, 90, 120];
+    // if (!selectedCourt) return [30, 60, 90, 120];
+    // const slotLength = selectedCourt.slotMinutes;
+    // return Array.from({ length: 8 }, (_, i) => slotLength * (i + 1));
   };
 
   // Simulate price when booking details change
@@ -150,7 +152,7 @@ export function CreateBookingDialog({
   const onSubmit = async (data: BookingFormData) => {
     try {
       setIsSubmitting(true);
-      
+
       const createData: CreateBookingData = {
         courtId: data.courtId,
         playerData: {
@@ -165,12 +167,12 @@ export function CreateBookingDialog({
       };
 
       await bookingApi.createBooking(createData);
-      
+
       toast({
         title: 'Booking created successfully',
         description: 'The new booking has been added to your schedule.',
       });
-      
+
       reset();
       setPriceSimulation(null);
       handleSuccess();
@@ -209,26 +211,30 @@ export function CreateBookingDialog({
             <Label>Court</Label>
             <Select
               value={courtId}
-              onValueChange={(value) => setValue('courtId', value)}
+              onValueChange={value => setValue('courtId', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a court" />
               </SelectTrigger>
               <SelectContent>
-                {facilities?.data.flatMap(facility => 
-                  (facility.courts || []).map(court => ({ 
-                    ...court, 
-                    facilityName: facility.name 
-                  }))
-                ).map((court) => (
-                  <SelectItem key={court.id} value={court.id}>
-                    {court.name} - {court.sport}
-                  </SelectItem>
-                ))}
+                {/* {facilities?.data
+                  .flatMap(facility =>
+                    (facility.courts || []).map(court => ({
+                      ...court,
+                      facilityName: facility.name,
+                    }))
+                  )
+                  .map(court => (
+                    <SelectItem key={court.id} value={court.id}>
+                      {court.name} - {court.sport}
+                    </SelectItem>
+                  ))} */}
               </SelectContent>
             </Select>
             {errors.courtId && (
-              <p className="text-sm text-destructive">{errors.courtId.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.courtId.message}
+              </p>
             )}
           </div>
 
@@ -238,7 +244,7 @@ export function CreateBookingDialog({
               <User className="h-4 w-4 mr-2" />
               Player Information
             </h4>
-            
+
             <div className="space-y-2">
               <Label htmlFor="playerName">Full Name</Label>
               <Input
@@ -247,7 +253,9 @@ export function CreateBookingDialog({
                 {...register('playerName')}
               />
               {errors.playerName && (
-                <p className="text-sm text-destructive">{errors.playerName.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.playerName.message}
+                </p>
               )}
             </div>
 
@@ -261,7 +269,9 @@ export function CreateBookingDialog({
                   {...register('playerEmail')}
                 />
                 {errors.playerEmail && (
-                  <p className="text-sm text-destructive">{errors.playerEmail.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.playerEmail.message}
+                  </p>
                 )}
               </div>
 
@@ -274,7 +284,9 @@ export function CreateBookingDialog({
                   {...register('playerPhone')}
                 />
                 {errors.playerPhone && (
-                  <p className="text-sm text-destructive">{errors.playerPhone.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.playerPhone.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -286,7 +298,7 @@ export function CreateBookingDialog({
               <CalendarIcon className="h-4 w-4 mr-2" />
               Booking Details
             </h4>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="date">Date</Label>
@@ -297,19 +309,19 @@ export function CreateBookingDialog({
                   {...register('date')}
                 />
                 {errors.date && (
-                  <p className="text-sm text-destructive">{errors.date.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.date.message}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="startTime">Start Time</Label>
-                <Input
-                  id="startTime"
-                  type="time"
-                  {...register('startTime')}
-                />
+                <Input id="startTime" type="time" {...register('startTime')} />
                 {errors.startTime && (
-                  <p className="text-sm text-destructive">{errors.startTime.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.startTime.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -318,26 +330,28 @@ export function CreateBookingDialog({
               <Label>Duration</Label>
               <Select
                 value={duration?.toString()}
-                onValueChange={(value) => setValue('duration', parseInt(value))}
+                onValueChange={value => setValue('duration', parseInt(value))}
               >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
                 <SelectContent>
-                  {getDurationOptions().map((mins) => (
+                  {getDurationOptions().map(mins => (
                     <SelectItem key={mins} value={mins.toString()}>
                       {mins} minutes
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {selectedCourt && (
+              {/* {selectedCourt && (
                 <p className="text-xs text-muted-foreground">
                   Court slot length: {selectedCourt.slotMinutes} minutes
                 </p>
-              )}
+              )} */}
               {errors.duration && (
-                <p className="text-sm text-destructive">{errors.duration.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.duration.message}
+                </p>
               )}
             </div>
 
@@ -368,11 +382,15 @@ export function CreateBookingDialog({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Rate per hour:</span>
-                  <span>{formatCurrency(priceSimulation.breakdown.pricePerHour)}</span>
+                  <span>
+                    {formatCurrency(priceSimulation.breakdown.pricePerHour)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Subtotal:</span>
-                  <span>{formatCurrency(priceSimulation.breakdown.subtotal)}</span>
+                  <span>
+                    {formatCurrency(priceSimulation.breakdown.subtotal)}
+                  </span>
                 </div>
                 <div className="flex justify-between font-medium text-lg pt-2 border-t">
                   <span>Total Amount:</span>

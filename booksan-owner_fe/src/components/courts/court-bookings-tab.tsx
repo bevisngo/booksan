@@ -1,11 +1,26 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Filter, Search, Eye, EyeOff, Plus } from 'lucide-react';
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Search,
+  Eye,
+  EyeOff,
+  Plus,
+} from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useBookings } from '@/hooks/use-bookings';
 import { Court } from '@/types/court';
@@ -23,60 +38,66 @@ interface CourtBookingsTabProps {
   onCreateBooking: () => void;
 }
 
-export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabProps) {
+export function CourtBookingsTab({
+  court,
+  onCreateBooking,
+}: CourtBookingsTabProps) {
   const [viewType, setViewType] = useState<ViewType>('day');
   const [scopeType, setScopeType] = useState<ScopeType>('this-court');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<BookingStatus | 'all'>('all');
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<BookingStatus | 'all'>(
+    'all'
+  );
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
+    null
+  );
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [createSlotData, setCreateSlotData] = useState<{
     date: string;
     startTime: string;
   } | null>(null);
 
-  const { bookings, loading, error, fetchBookings } = useBookings();
-
-  // Fetch bookings based on current filters
-  React.useEffect(() => {
-    const filters = {
+  // Create stable filters object
+  const filters = React.useMemo(
+    () => ({
       courtId: scopeType === 'this-court' ? court.id : undefined,
       search: searchQuery || undefined,
       status: statusFilter !== 'all' ? statusFilter : undefined,
-      dateFrom: getDateRangeForView().start,
-      dateTo: getDateRangeForView().end,
-    };
+      startDate: getDateRangeForView().start,
+      endDate: getDateRangeForView().end,
+    }),
+    [court.id, scopeType, searchQuery, statusFilter, selectedDate, viewType]
+  );
 
-    fetchBookings(filters);
-  }, [court.id, scopeType, searchQuery, statusFilter, selectedDate, viewType, fetchBookings]);
+  const { bookings, loading, error, fetchBookings } = useBookings(filters);
 
   // Calculate date range based on view type
   function getDateRangeForView() {
     const date = new Date(selectedDate);
-    
+
     switch (viewType) {
       case 'day':
         return {
           start: date.toISOString().split('T')[0],
           end: date.toISOString().split('T')[0],
         };
-      
+
       case 'week':
         const startOfWeek = new Date(date);
         startOfWeek.setDate(date.getDate() - date.getDay());
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6);
-        
+
         return {
           start: startOfWeek.toISOString().split('T')[0],
           end: endOfWeek.toISOString().split('T')[0],
         };
-      
+
       case 'month':
         const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
         const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-        
+
         return {
           start: startOfMonth.toISOString().split('T')[0],
           end: endOfMonth.toISOString().split('T')[0],
@@ -87,7 +108,7 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
   // Navigate dates
   const navigateDate = (direction: 'prev' | 'next') => {
     const newDate = new Date(selectedDate);
-    
+
     switch (viewType) {
       case 'day':
         newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1));
@@ -99,7 +120,7 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
         newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
         break;
     }
-    
+
     setSelectedDate(newDate);
   };
 
@@ -108,16 +129,16 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
     const { start, end } = getDateRangeForView();
     const startDate = new Date(start);
     const endDate = new Date(end);
-    
+
     if (viewType === 'day') {
       return startDate.toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
       });
     }
-    
+
     if (viewType === 'week') {
       if (startDate.getMonth() === endDate.getMonth()) {
         return `${startDate.toLocaleDateString('en-US', { month: 'long' })} ${startDate.getDate()}-${endDate.getDate()}, ${startDate.getFullYear()}`;
@@ -125,10 +146,10 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
         return `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${startDate.getFullYear()}`;
       }
     }
-    
+
     return startDate.toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'long'
+      month: 'long',
     });
   };
 
@@ -149,7 +170,7 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
       if (scopeType === 'this-court' && booking.courtId !== court.id) {
         return false;
       }
-      
+
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
@@ -159,7 +180,7 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
           booking.bookingCode.toLowerCase().includes(query)
         );
       }
-      
+
       return true;
     });
   }, [bookings, scopeType, court.id, searchQuery]);
@@ -182,7 +203,7 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
           <div className="flex flex-wrap items-center gap-3">
             {/* View Type Selector */}
             <div className="flex rounded-md border">
-              {(['day', 'week', 'month'] as ViewType[]).map((type) => (
+              {(['day', 'week', 'month'] as ViewType[]).map(type => (
                 <button
                   key={type}
                   onClick={() => setViewType(type)}
@@ -232,7 +253,7 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
               <Input
                 placeholder="Search player, code..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="pl-9 w-48"
               />
             </div>
@@ -240,7 +261,9 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
             {/* Status Filter */}
             <Select
               value={statusFilter}
-              onValueChange={(value) => setStatusFilter(value as BookingStatus | 'all')}
+              onValueChange={value =>
+                setStatusFilter(value as BookingStatus | 'all')
+              }
             >
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="All Status" />
@@ -274,12 +297,12 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            
+
             <div className="flex items-center space-x-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <h2 className="text-lg font-semibold">{formatDateRange()}</h2>
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -287,7 +310,7 @@ export function CourtBookingsTab({ court, onCreateBooking }: CourtBookingsTabPro
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
-            
+
             <Button
               variant="ghost"
               size="sm"
